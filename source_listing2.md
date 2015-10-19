@@ -36,10 +36,16 @@ item.name.last
     }
   },
 
+  //  
   "data": {
     "default": {
       "list-item": {
-         "path": "persons"
+         "path": "persons",
+         "attrs": {
+           "class": {
+             "add": "item-${$index}"
+           }
+         },
          "items": {
            ":0": "id",
            ":1": "firstname",
