@@ -1,6 +1,7 @@
 # Summary
 
 * [Introduction](README.md)
+   * Example 2 (repeat)
 * [Mappings](mappings.md)
    * [Event Mapping](event_mapping.md)
    * [Template Mapping](template_mapping.md)
