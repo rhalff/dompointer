@@ -58,24 +58,34 @@
       "planet-monitor": "name"
     },
     "slot1": {
-      ":0": "name",
-      ":1:1": "homeworld.name"
+      "slot-1": {
+        ":0": "name",
+        ":1:1": "homeworld.name"
+      }
     },
     "slot2": {
-      ":0": "name",
-      ":1:1": "homeworld.name"
+      "slot-2": {
+        ":0": "name",
+        ":1:1": "homeworld.name"
+      }
     },
     "slot3": {
-      ":0": "name",
-      ":1:1": "homeworld.name"
+      "slot-3": {
+        ":0": "name",
+        ":1:1": "homeworld.name"
+      }
     },
     "slot4": {
-      ":0": "name",
-      ":1:1": "homeworld.name"
+      "slot-4": {
+        ":0": "name",
+        ":1:1": "homeworld.name"
+      }
     },
     "slot5": {
-      ":0": "name",
-      ":1:1": "homeworld.name"
+      "slot-5": {
+        ":0": "name",
+        ":1:1": "homeworld.name"
+      }
     }
   },
 
