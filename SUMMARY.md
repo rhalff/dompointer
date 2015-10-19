@@ -11,5 +11,5 @@
    * [Data Mapping](data_mapping_ex.md)
    * [Source Listing](source_listing.md)
    * [Source Listing (Compact)](source_listing_compact.md)
-* Example 2 (repeat)
+* [Example 2 (repeat)](example_2_repeat.md)
 
