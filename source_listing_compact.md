@@ -3,32 +3,31 @@
 ```HTML
 <div class="app-container">
   <div class="css-root">
-    <h1 class="css-planet-monitor">Obi-Wan currently on Tatooine</h1>
+    <h1 class="css-planet-monitor">Obi-Wan currently on <!-- The Current Planet --></h1>
 
     <section class="css-scrollable-list">
       <ul class="css-slots">
         <li class="css-slot">
-          <h3>Jorak Uln</h3>
-          <h6>Homeworld: Korriban</h6>
+          <h3><!-- Jedi Slot 1 --></h3>
+          <h6>Homeworld: <!-- Homeworld Slot 1 --></h6>
         </li>
         <li class="css-slot">
-          <h3>Skere Kaan</h3>
-          <h6>Homeworld: Coruscant</h6>
+          <h3><!-- Jedi Slot 2 --></h3>
+          <h6>Homeworld: <!-- Homeworld Slot 2 --></h6>
+        </li>        
+        <li class="css-slot">
+          <h3><!-- Jedi Slot 3 --></h3>
+          <h6>Homeworld: <!-- Homeworld Slot 3 --></h6>
         </li>
         <li class="css-slot">
-          <h3>Na'daz</h3>
-          <h6>Homeworld: Ryloth</h6>
+          <h3><!-- Jedi Slot 4 --></h3>
+          <h6>Homeworld: <!-- Homeworld Slot 4 --></h6>
         </li>
         <li class="css-slot">
-          <h3>Kas'im</h3>
-          <h6>Homeworld: Nal Hutta</h6>
-        </li>
-        <li class="css-slot">
-          <h3>Darth Bane</h3>
-          <h6>Homeworld: Apatros</h6>
+          <h3><!-- Jedi Slot 5 --></h3>
+          <h6>Homeworld: <!-- Homeworld Slot 5 --></h6>
         </li>
       </ul>
-
       <div class="css-scroll-buttons">
         <button class="css-button-up"></button>
         <button class="css-button-down"></button>
