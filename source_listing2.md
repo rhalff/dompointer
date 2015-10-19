@@ -19,3 +19,25 @@ item.name.first
 item.name.last
 ```
 
+```JSON
+[
+  "persons": [
+    { "id": 1, "firstname": "Rob", "lastname": "Halff" }
+    { "id": 2, "firstname": "Robb", "lastname": "Halff" }
+  ]
+]
+```
+
+```JSON
+{
+  "template": {
+    {
+      "list-item": ":0:0"
+    }
+  },
+
+  "data": {
+  }
+
+}
+```
