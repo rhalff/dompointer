@@ -52,9 +52,6 @@ describe('DomPointer', () => {
 
   it('path()', () => {
     const dp = DomPointer.fromHTML(html)
-    // gah when to do it?
-    // normally if the element is empty you'll want to wait for all info first.
-    // the elements
     dp.setElement(targetEl)
     dp.render()
     expect(dp.path(dp.refs.get(':0'))).eql(':0')
