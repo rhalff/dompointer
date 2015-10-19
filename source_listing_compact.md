@@ -110,7 +110,9 @@
      "disable-up": {
         "button-up": {
           "attributes": {
-            "class": "css-button-disabled"
+            "class": {
+              "add": "css-button-disabled"
+            }
           },
           "events": {}
         }
@@ -119,7 +121,9 @@
      "disable-down": {
         "button-down": {
           "attributes": {
-            "class": "css-button-disabled"
+            "class": {
+              "add": "css-button-disabled"
+            }
           }
         }
      },
@@ -127,7 +131,9 @@
      "dark-jedi-found": {
         ":": {
           "attributes": {
-            "class": "dark-jedi"
+            "class": {
+              "add": "dark-jedi"
+             }
           }
         }
      }
