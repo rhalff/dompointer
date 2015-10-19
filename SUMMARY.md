@@ -2,7 +2,7 @@
 
 * [Introduction](README.md)
 * [Mappings](mappings.md)
-   * Event Mapping
+   * [Event Mapping](event_mapping.md)
    * [Template Mapping](template_mapping.md)
    * [Data Mapping](data_mapping.md)
    * Attribute Mapping
