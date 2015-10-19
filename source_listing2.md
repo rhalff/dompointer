@@ -37,6 +37,16 @@ item.name.last
   },
 
   "data": {
+    "default": {
+      "list-item": {
+         "path": "persons"
+         "items": {
+           ":0": "id",
+           ":1": "firstname",
+           ":2": "lastname"
+         }
+      }
+    }
   }
 
 }
