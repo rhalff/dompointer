@@ -43,7 +43,7 @@ item.name.last
          "path": "persons",
          "attrs": {
            "class": {
-             "add": "item-${$index}"
+             "add": "item-${index}"
            }
          },
          "items": {
