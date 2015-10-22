@@ -24,6 +24,17 @@ export default class DomPointer {
      */
     this.refs = new Map()
 
+    /**
+     *
+     * Cached alias mappings.
+     *
+     * Will be re-applied during each reset
+     *
+     * @type {Map}
+     * @private
+     */
+    this._aliases = new Map()
+
     this._opts = {
       comments: true
     }
@@ -72,6 +83,11 @@ export default class DomPointer {
         return this.parse(node, arr)
       }
     }
+
+    for (const [alias, path] of this._aliases) {
+      this._alias(alias, path)
+    }
+
     return this
   }
 
@@ -101,7 +117,17 @@ export default class DomPointer {
     return this
   }
 
+  _alias(alias, path) {
+    if (validAlias.test(alias)) {
+      this.refs.set(alias, this.getRef(path))
+      return this
+    }
+
+    throw Error('Invalid alias: ' + alias)
+  }
+
   /**
+   *
    * Alias
    *
    * @param {String} alias Alias name
@@ -109,12 +135,8 @@ export default class DomPointer {
    * @returns {DomPointer} This instance
    */
   alias(alias, path) {
-    if (validAlias.test(alias)) {
-      this.refs.set(alias, this.getRef(path))
-      return this
-    }
-
-    throw Error('Invalid alias: ' + alias)
+    this._alias(alias, path)
+    this._aliases.set(alias, path)
   }
 
   /**
