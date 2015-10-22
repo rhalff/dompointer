@@ -5,7 +5,7 @@ Positional Templating
 
 
 ```html
-     <div class="panel panel-default">
+     <div id="example" class="panel panel-default">
         <!-- Default panel contents -->
         <div class="panel-heading">Panel heading</div>
         <div class="panel-body">
@@ -25,22 +25,16 @@ Positional Templating
 ```
 
 ```
+    import DomPointer from 'dompointer'
 
-    var map = [];
-    map.push(':0');   // panel-heading
-    map.push(':1');   // panel-body
-    map.push(':2:0'); // first list item
-    map.push(':2:*'); // all list items
-
-    dp =  new DomPointer(document.querySelector('.panel'), map);
-
-    var refs = dp.getRefs();
-    refs[':0'].style.fontSize = '2em';
-    refs[':0'].innerHTML = 'Dom Pointer';
-    refs[':1'].innerHTML = 'Pointers for a simple template engine';
-    refs[':2:0'].style.fontWeight = 'bold';
-
-    $(refs[':2:*']).css('color', 'blue');
+    let dp = DomPointer:create(document.querySelector('#example'))
+    dp.setOpts({comments: false})
+    dp.data(':0', 'Dom Pointer')
+    dp.data(':1', 'Pointers for a simple template engine');
+    dp.setAttibutes([
+      { op: 'remove', 'path': ':0', name: 'class', val: 'panel-heading'}
+      { op: 'add', 'path': ':0', name: 'class', val: 'panel-heading'}
+    ])
 
 ```
 
@@ -50,7 +44,7 @@ Tests
 Client Side:
 
 ```
-grunt test
+npm run test
 ```
 
 Server Side:

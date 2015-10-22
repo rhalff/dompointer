@@ -7,8 +7,8 @@ describe('DomPointer', () => {
   const html = `
     <div>
       <div>
-        <h3 title="H3"></h3>
-        <h6></h6>
+        <h1 title="Heading" class="heading"></h1>
+        <h3 class="sub title"></h3>
       </div>
     </div>`
   const targetEl = document.getElementById('target')
@@ -50,16 +50,36 @@ describe('DomPointer', () => {
     })
   })
 
-  it('setAttributes()', () => {
-    const dp = DomPointer.fromHTML(html)
-    dp.setElement(targetEl)
-    dp.setAttributes([
-      { path: ':0:0:0', op: 'remove', name: 'title' },
-      { path: ':0:0:1', op: 'add', name: 'title', val: 'My Title' }
-    ])
+  describe('setAttributes()', () => {
+    it('Can remove attribute', () => {
+      const dp = DomPointer.fromHTML(html)
 
-    expect(dp.refs.get(':0:0:0').hasAttribute('title')).eql(false)
-    expect(dp.refs.get(':0:0:1').getAttribute('title')).eql('My Title')
+      expect(dp.refs.get(':0:0:0').hasAttribute('title')).eql(true)
+      dp.setAttributes([
+        { path: ':0:0:0', op: 'remove', name: 'title' }
+      ])
+
+      expect(dp.refs.get(':0:0:0').hasAttribute('title')).eql(false)
+    })
+    it('Can remove field from attribute', () => {
+      const dp = DomPointer.fromHTML(html)
+      dp.setAttributes([
+        { path: ':0:0:1', op: 'remove', name: 'class', val: 'sub' },
+      ])
+
+      expect(dp.refs.get(':0:0:1').hasAttribute('class')).eql(true)
+      expect(dp.refs.get(':0:0:1').getAttribute('class')).eql('title')
+    })
+    it('Can add attribute', () => {
+      const dp = DomPointer.fromHTML(html)
+
+      dp.setAttributes([
+        { path: ':0:0:1', op: 'add', name: 'class', val: 'test' }
+      ])
+
+      expect(dp.refs.get(':0:0:1').hasAttribute('class')).eql(true)
+      expect(dp.refs.get(':0:0:1').getAttribute('class')).eql('sub title test')
+    })
   })
 
   describe('data()', () => {

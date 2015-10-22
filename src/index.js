@@ -55,8 +55,9 @@ export default class DomPointer {
    * @returns {DomPointer} This instance
    */
   parse(el, _p = []) {
-    for (let [idx, node] of Array.from(el.childNodes).entries()) {
+    for (const [idx, _node] of Array.from(el.childNodes).entries()) {
       const arr = _p.slice()
+      let node = _node
       arr.push(idx)
 
       if (node.nodeType === Node.COMMENT_NODE) {
@@ -239,16 +240,82 @@ export default class DomPointer {
     throw Error('Unknown path: ' + path)
   }
 
+  /**
+   *
+   * Add attribute
+   *
+   * Will add an attribute:
+   *
+   *  { op: 'add', path: ':0:1', name: 'class', val: 'warning' }
+   *
+   * If the attribute already exists will append the value separated by a space
+   *
+   * @param {HTMLElement} el HTML Element
+   * @param {Object} change Change object
+   * @param {String} change.op The operation
+   * @param {String} change.path The target path
+   * @param {String} change.name Attribute name
+   * @param {String} change.val Attribute value
+   * @returns {Void} Void
+   * @private
+   */
+  _addAttribute(el, change) {
+    const curr = el.getAttribute(change.name)
+    if (curr) {
+      el.setAttribute(change.name, [curr, change.val].join(' '))
+    } else {
+      el.setAttribute(change.name, change.val)
+    }
+  }
+
+  /**
+   *
+   * Removes an attribute
+   *
+   * Will remove the attribute entirely:
+   *
+   *  { op: 'remove', path: ':0:1', name: 'class' }
+   *
+   * If you specify a val and the attribute is a class
+   * will only remove the value from the class list:
+   *
+   *  { op: 'remove', path: ':0:1', name: 'class', val: 'warning' }
+   *
+   * @param {HTMLElement} el HTML Element
+   * @param {Object} change Change object
+   * @param {String} change.op The operation
+   * @param {String} change.path The target path
+   * @param {String} change.name Attribute name
+   * @param {String} change.val Attribute value
+   * @returns {Void} Void
+   * @private
+   */
+  _removeAttribute(el, change) {
+    const curr = el.getAttribute(change.name)
+    if (change.val) {
+      if (curr) {
+        const items = curr.split(' ')
+        items.splice(
+          items.indexOf(change.val), 1
+        )
+        el.setAttribute(change.name, items.join(' '))
+      }
+    } else {
+      el.removeAttribute(change.name)
+    }
+  }
+
   setAttributes(map = []) {
     for (const change of map) {
+      const el = this.refs.get(change.path)
       switch (change.op) {
       case 'remove':
-        this.refs.get(change.path).removeAttribute(change.name)
+        this._removeAttribute(el, change)
         break
       case 'add':
       case 'change':
       default:
-        this.refs.get(change.path).setAttribute(change.name, change.val)
+        this._addAttribute(el, change)
         break
       }
     }
