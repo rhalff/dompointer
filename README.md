@@ -29,11 +29,22 @@ Positional Templating
 
     const el = document.querySelector('#example')
     const dp = DomPointer:create(el, { comments: false })
-    dp.data(':0', 'Dom Pointer')
-    dp.data(':1', 'Pointers for a simple template engine');
+
+    dp.data(':0:0', 'Dom Pointer')
+    dp.data(':0:1', 'Pointers for a simple template engine');
     dp.setAttibutes([
-      { op: 'remove', 'path': ':0', name: 'class', val: 'panel-heading'}
-      { op: 'add', 'path': ':0', name: 'class', val: 'panel-heading'}
+      { op: 'remove', 'path': ':0:0', name: 'class', val: 'panel-heading'}
+      { op: 'add', 'path': ':0:0', name: 'class', val: 'panel-heading'}
+    ])
+
+    dp.alias('heading', ':0:0')
+    dp.alias('body', ':0:1')
+
+    dp.data('heading', 'Dom Pointer')
+    dp.data('body', 'Pointers for a simple template engine');
+    dp.setAttibutes([
+      { op: 'remove', 'path': 'heading', name: 'class', val: 'panel-heading'}
+      { op: 'add', 'path': 'heading', name: 'class', val: 'panel-heading'}
     ])
 
 ```
