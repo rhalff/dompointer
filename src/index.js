@@ -1,5 +1,7 @@
 import { clean } from 'dom-clean'
 
+const validAlias = /^[A-Za-z]+[\w\-]*$/
+
 export default class DomPointer {
   constructor() {
     /**
@@ -97,6 +99,22 @@ export default class DomPointer {
       this._opts[key] = opts[key]
     }
     return this
+  }
+
+  /**
+   * Alias
+   *
+   * @param {String} alias Alias name
+   * @param {String} path Path to be aliased
+   * @returns {DomPointer} This instance
+   */
+  alias(alias, path) {
+    if (validAlias.test(alias)) {
+      this.refs.set(alias, this.getRef(path))
+      return this
+    }
+
+    throw Error('Invalid alias: ' + alias)
   }
 
   /**

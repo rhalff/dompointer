@@ -114,6 +114,16 @@ describe('DomPointer', () => {
     expect(dp.refs.get(':0').innerHTML).eql('Some text')
   })
 
+  describe('alias()', () => {
+    it('set alias', () => {
+      const dp = DomPointer.fromHTML(html)
+      dp.alias('heading', ':0:0:0')
+      dp.alias('subtitle', ':0:0:1')
+      expect(dp.refs.get('heading')).eql(dp.refs.get(':0:0:0'))
+      expect(dp.refs.get('subtitle')).eql(dp.refs.get(':0:0:1'))
+    })
+  })
+
   describe('reset()', () => {
     it('should reset', () => {
       const dp = DomPointer.fromHTML('<div>Some text<!-- HERE --></div>')
