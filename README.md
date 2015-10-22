@@ -27,8 +27,8 @@ Positional Templating
 ```
     import DomPointer from 'dompointer'
 
-    let dp = DomPointer:create(document.querySelector('#example'))
-    dp.setOpts({comments: false})
+    const el = document.querySelector('#example')
+    const dp = DomPointer:create(el, { comments: false })
     dp.data(':0', 'Dom Pointer')
     dp.data(':1', 'Pointers for a simple template engine');
     dp.setAttibutes([
