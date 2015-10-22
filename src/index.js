@@ -57,6 +57,23 @@ export default class DomPointer {
     this._swp = document.createDocumentFragment()
   }
 
+  _parse(el, _p = []) {
+    for (let idx = 0; idx < el.childNodes.length; idx++) {
+      let node = el.childNodes[idx]
+      const arr = _p.slice()
+      arr.push(idx)
+
+      if (node.nodeType === Node.COMMENT_NODE) {
+        node = this._convertCommentToTextNode(node)
+      }
+      this.refs.set(':' + arr.join(':'), node)
+
+      if (node.childNodes.length) {
+        this._parse(node, arr)
+      }
+    }
+  }
+
   /**
    *
    * Parses the given element and puts the references into this.refs
@@ -67,22 +84,8 @@ export default class DomPointer {
    * @param {Array} _p private path
    * @returns {DomPointer} This instance
    */
-  parse(el, _p = []) {
-    for (const [idx, _node] of Array.from(el.childNodes).entries()) {
-      const arr = _p.slice()
-      let node = _node
-      arr.push(idx)
-
-      if (node.nodeType === Node.COMMENT_NODE) {
-        node = this._convertCommentToTextNode(node)
-      }
-
-      this.refs.set(':' + arr.join(':'), node)
-
-      if (node.childNodes.length) {
-        return this.parse(node, arr)
-      }
-    }
+  parse(el) {
+    this._parse(el)
 
     for (const [alias, path] of this._aliases) {
       this._alias(alias, path)

@@ -2,6 +2,7 @@ import {} from 'babel/register'
 import { expect } from 'chai'
 import DomPointer from '../index'
 import { createElement } from './util'
+import JediHTML from './fixture/jedi'
 
 describe('DomPointer', () => {
   const html = `
@@ -34,7 +35,6 @@ describe('DomPointer', () => {
 
   it('paths()', () => {
     const dp = DomPointer.fromHTML(html)
-    dp.setElement(targetEl)
 
     const refs = [
       dp.refs.get(':0'),
@@ -49,6 +49,37 @@ describe('DomPointer', () => {
       ':0:0:0': refs[2],
       ':0:0:1': refs[3]
     })
+  })
+
+  it('Other template', () => {
+    const dp = DomPointer.fromHTML(JediHTML)
+
+    const expected = [
+      ':0',
+      ':0:0',
+      ':0:0:0',
+      ':0:0:0:0',
+      ':0:0:0:1',
+      ':0:0:1',
+      ':0:0:1:0',
+      ':0:0:1:0:0',
+      ':0:0:1:0:0:0',
+      ':0:0:1:0:0:0:0',
+      ':0:0:1:0:0:1',
+      ':0:0:1:0:0:1:0',
+      ':0:0:1:0:0:1:1',
+      ':0:0:1:0:1',
+      ':0:0:1:0:1:0',
+      ':0:0:1:0:1:0:0',
+      ':0:0:1:0:1:1',
+      ':0:0:1:0:1:1:0',
+      ':0:0:1:0:1:1:1',
+      ':0:0:1:1',
+      ':0:0:1:1:0',
+      ':0:0:1:1:1'
+    ]
+
+    expect(Array.from(dp.refs.keys())).eql(expected)
   })
 
   describe('setAttributes()', () => {
