@@ -190,6 +190,7 @@ export default class DomPointer {
       el.cloneNode(true)
     )
     dp.reset()
+    return dp
   }
 
   /**

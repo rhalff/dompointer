@@ -14,7 +14,8 @@ describe('DomPointer', () => {
   const targetEl = document.getElementById('target')
 
   it('create()', () => {
-    DomPointer.create(createElement(html))
+    const dp = DomPointer.create(createElement(html))
+    expect(dp).to.be.instanceOf(DomPointer)
   })
 
   it('fromHTML()', () => {
