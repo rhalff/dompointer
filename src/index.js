@@ -231,6 +231,10 @@ export default class DomPointer {
     return this
   }
 
+  _dealias(alias) {
+    return this._aliases.has(alias) ? this._aliases.get(alias) : alias
+  }
+
   /**
    *
    * Retrieve or set data for this node.
@@ -246,7 +250,7 @@ export default class DomPointer {
    * @returns {DomPointer} Dom Pointer instance
    */
   data(path, val, cpath, append) {
-    const fpath = cpath ? cpath + path : path
+    const fpath = cpath ? this._dealias(cpath) + path : path
     const el = this.getRef(fpath)
     const method = el.nodeType === Node.TEXT_NODE ? 'nodeValue' : 'innerHTML'
     if (append) {

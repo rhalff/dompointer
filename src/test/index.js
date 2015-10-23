@@ -159,6 +159,7 @@ describe('DomPointer', () => {
     const dp = DomPointer.fromHTML(html)
 
     it('set alias', () => {
+      dp.alias('parent', ':0:0')
       dp.alias('heading', ':0:0:0')
       dp.alias('subtitle', ':0:0:1')
       expect(dp.refs.get('heading')).eql(dp.refs.get(':0:0:0'))
@@ -169,6 +170,11 @@ describe('DomPointer', () => {
       dp.reset()
       expect(dp.refs.get('heading')).eql(dp.refs.get(':0:0:0'))
       expect(dp.refs.get('subtitle')).eql(dp.refs.get(':0:0:1'))
+    })
+
+    it('set data with aliased parent', () => {
+      dp.data(':0', 'Test', 'parent')
+      expect(dp.refs.get(':0:0:0').innerHTML).eql('Test')
     })
   })
 })
