@@ -231,8 +231,16 @@ export default class DomPointer {
     return this
   }
 
-  _dealias(alias) {
-    return this._aliases.has(alias) ? this._aliases.get(alias) : alias
+  /**
+   *
+   * Dealias
+   *
+   * @param {String} path Path to be dealiased
+   * @returns {String} Dealiased path
+   * @private
+   */
+  _dealias(path) {
+    return this._aliases.has(path) ? this._aliases.get(path) : path
   }
 
   /**
