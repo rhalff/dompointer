@@ -1,6 +1,6 @@
 {
   "name": "dompointer",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "",
   "main": "lib/index.js",
   "esnext:main": "src/index.js",
