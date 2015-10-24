@@ -1,5 +1,5 @@
 import {} from 'babel/register'
-import { expect } from 'chai'
+import { expect, assert } from 'chai'
 import DomPointer from '../index'
 import { createElement } from './util'
 import JediHTML from './fixture/jedi'
@@ -166,8 +166,14 @@ describe('DomPointer', () => {
     it('should reset', () => {
       const dp = DomPointer.fromHTML('<div>Some text<!-- HERE --></div>')
       dp.reset()
-      // whole lot of tests
-      // dp.reset()
+    })
+    it('should reset and remove', () => {
+      const dp = DomPointer.fromHTML('<div>Some text<!-- HERE --></div>')
+      const oldRef = dp.refs.get(':0')
+      const oldSize = oldRef.size
+      dp.reset(true)
+      assert.isTrue(oldRef !== dp.refs.get(':0'))
+      assert.isTrue(oldSize !== dp.refs.size)
     })
   })
 

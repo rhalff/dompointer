@@ -396,10 +396,11 @@ export default class DomPointer {
    * @returns {DomPointer} Dom Pointer instance
    */
   reset(remove) {
-    if (remove) {
-      this.el.parentNode.removeChild(this.el)
+    if (remove && this.el) {
+      this.el.innerHTML = ''
     }
     this.refs.clear()
+    this._swp = document.createDocumentFragment()
     this._swp.appendChild(
       this.template.cloneNode(true)
     )
@@ -416,7 +417,8 @@ export default class DomPointer {
    */
   render() {
     if (this.el) {
-      return this.el.replaceChild(this._swp, this.el.firstChild) // automatically clears this._swp
+      this.el.innerHTML = ''
+      return this.el.appendChild(this._swp) // automatically clears this._swp
     }
     throw Error('Target element not set, use setElement() first')
   }
