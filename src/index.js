@@ -102,8 +102,11 @@ export default class DomPointer {
    * @returns {DomPointer} This instance
    */
   setElement(el) {
-    this.el = el
-    return this
+    if (el && el.nodeType === Node.ELEMENT_NODE) {
+      this.el = el
+      return this
+    }
+    throw Error('Element node type must be ELEMENT_NODE')
   }
 
   /**
@@ -412,6 +415,9 @@ export default class DomPointer {
    * @return {HTMLElement} The old childNode
    */
   render() {
-    return this.el.replaceChild(this._swp, this.el.firstChild) // automatically clears this._swp
+    if (this.el) {
+      return this.el.replaceChild(this._swp, this.el.firstChild) // automatically clears this._swp
+    }
+    throw Error('Target element not set, use setElement() first')
   }
 }

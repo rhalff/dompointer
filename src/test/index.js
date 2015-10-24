@@ -23,6 +23,22 @@ describe('DomPointer', () => {
     DomPointer.fromHTML(html)
   })
 
+  describe('setElement', () => {
+    it('can set element', () => {
+      const dp = DomPointer.fromHTML(html)
+      dp.setElement(document.createElement('div'))
+    })
+    it('target type must be a NODE_ELEMENT', () => {
+      const dp = DomPointer.fromHTML(html)
+      expect(() => dp.setElement(document.createDocumentFragment()))
+        .to.throw(Error)
+    })
+    it('Render() should throw if target element is not set', () => {
+      const dp = DomPointer.fromHTML(html)
+      expect(() => dp.render()).to.throw(Error)
+    })
+  })
+
   it('path()', () => {
     const dp = DomPointer.fromHTML(html)
     dp.setElement(targetEl)
