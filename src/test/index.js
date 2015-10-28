@@ -162,21 +162,6 @@ describe('DomPointer', () => {
     expect(dp.refs.get(':0').innerHTML).eql('Some text')
   })
 
-  describe('reset()', () => {
-    it('should reset', () => {
-      const dp = DomPointer.fromHTML('<div>Some text<!-- HERE --></div>')
-      dp.reset()
-    })
-    it('should reset and remove', () => {
-      const dp = DomPointer.fromHTML('<div>Some text<!-- HERE --></div>')
-      const oldRef = dp.refs.get(':0')
-      const oldSize = oldRef.size
-      dp.reset(true)
-      assert.isTrue(oldRef !== dp.refs.get(':0'))
-      assert.isTrue(oldSize !== dp.refs.size)
-    })
-  })
-
   describe('alias()', () => {
     const dp = DomPointer.fromHTML(html)
 
@@ -217,6 +202,50 @@ describe('DomPointer', () => {
       expect(dp._handlers).to.have.ownProperty('click')
       dp.off('click')
       expect(dp._handlers).to.not.have.ownProperty('click')
+    })
+
+    it('can turn off all', () => {
+      const bogus = function bogus() {}
+      dp.on('click', bogus)
+      dp.on('mouseover', bogus)
+      dp.off()
+      expect(dp._handlers).to.not.have.ownProperty('click')
+      expect(dp._handlers).to.not.have.ownProperty('mouseover')
+      expect(Object.keys(dp._handlers).length).to.eql(0)
+    })
+    it('persist when container element changes', (done) => {
+      let clicks = 0
+      dp.on('click', () => {
+        if (++clicks === 2) {
+          done()
+        }
+      })
+      expect(dp._handlers).to.have.ownProperty('click')
+      click(dp.el)
+      dp.setElement(document.createElement('div'))
+      click(dp.el)
+    })
+    it('persist throughout render', () => {
+      expect(dp._handlers).to.have.ownProperty('click')
+      dp.render()
+      expect(dp._handlers).to.have.ownProperty('click')
+      dp.render()
+      expect(dp._handlers).to.have.ownProperty('click')
+    })
+  })
+
+  describe('reset()', () => {
+    it('should reset', () => {
+      const dp = DomPointer.fromHTML('<div>Some text<!-- HERE --></div>')
+      dp.reset()
+    })
+    it('should reset and remove', () => {
+      const dp = DomPointer.fromHTML('<div>Some text<!-- HERE --></div>')
+      const oldRef = dp.refs.get(':0')
+      const oldSize = oldRef.size
+      dp.reset(true)
+      assert.isTrue(oldRef !== dp.refs.get(':0'))
+      assert.isTrue(oldSize !== dp.refs.size)
     })
   })
 })

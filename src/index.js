@@ -112,7 +112,11 @@ export default class DomPointer {
    */
   setElement(el) {
     if (el && el.nodeType === Node.ELEMENT_NODE) {
+      if (this.el) {
+        this._clearOn()
+      }
       this.el = el
+      this._applyOn(this.el)
       return this
     }
     throw Error('Element node type must be ELEMENT_NODE')
@@ -418,14 +422,49 @@ export default class DomPointer {
    */
   off(type) {
     if (this.el) {
-      if (!this._handlers[type]) {
-        throw Error('No event handler installed for ${type}')
+      if (!arguments.length) {
+        Object.keys(this._handlers).forEach((kind) => this.off(kind))
+      } else {
+        if (!this._handlers[type]) {
+          throw Error('No event handler installed for ${type}')
+        }
+        this.el.removeEventListener(type, this._handlers[type])
+        delete this._handlers[type]
       }
-      this.el.removeEventListener(type, this._handlers[type])
-      delete this._handlers[type]
       return this
     }
     throw Error('Container element not set')
+  }
+
+  /**
+   *
+   * Removes event handlers from the current container element.
+   *
+   * Mainly used before the container element is swapped.
+   *
+   * @private
+   * @returns {undefined} Undefined
+   */
+  _clearOn() {
+    Object.keys(this._handlers).forEach((type) => {
+      this.el.removeEventListener(type, this._handlers[type])
+    })
+  }
+
+  /**
+   *
+   * Applies the event handlers to current container element
+   *
+   * Assumes no handlers are yet installed on the element.
+   *
+   * @param {HTMLElement} el HTML Element
+   * @private
+   * @returns {undefined} Undefined
+   */
+  _applyOn(el) {
+    Object.keys(this._handlers).forEach((type) => {
+      el.addEventListener(type, this._handlers[type])
+    })
   }
 
   /**
@@ -448,11 +487,13 @@ export default class DomPointer {
       this.el.innerHTML = ''
     }
     this.refs.clear()
+    this._clearOn()
     this._swp = document.createDocumentFragment()
     this._swp.appendChild(
       this.template.cloneNode(true)
     )
     this.parse(this._swp)
+    this._applyOn(this._swp)
     return this
   }
 
