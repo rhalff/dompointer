@@ -1,7 +1,7 @@
 import {} from 'babel/register'
 import { expect, assert } from 'chai'
 import DomPointer from '../index'
-import { createElement } from './util'
+import { createElement, click } from './util'
 import JediHTML from './fixture/jedi'
 
 describe('DomPointer', () => {
@@ -197,6 +197,26 @@ describe('DomPointer', () => {
     it('set data with aliased parent', () => {
       dp.data(':0', 'Test', 'parent')
       expect(dp.refs.get(':0:0:0').innerHTML).eql('Test')
+    })
+  })
+  describe('Events', () => {
+    const dp = DomPointer.fromHTML(html)
+    dp.setElement(document.createElement('div'))
+
+    it('on()', (done) => {
+      dp.on('click', () => done())
+      expect(dp._handlers).to.have.ownProperty('click')
+      click(dp.el)
+    })
+
+    it('can only install one handler', () => {
+      expect( () => dp.on('click') ).to.throw(Error)
+    })
+
+    it('off()', () => {
+      expect(dp._handlers).to.have.ownProperty('click')
+      dp.off('click')
+      expect(dp._handlers).to.not.have.ownProperty('click')
     })
   })
 })

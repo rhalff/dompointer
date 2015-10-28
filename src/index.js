@@ -41,6 +41,15 @@ export default class DomPointer {
 
     /**
      *
+     * Keeps track of installed Event handlers
+     *
+     * @type {Object}
+     * @private
+     */
+    this._handlers = {}
+
+    /**
+     *
      * Target element where this template is rendered
      *
      * @type {HTMLElement}
@@ -378,6 +387,45 @@ export default class DomPointer {
         break
       }
     }
+  }
+
+  /**
+   *
+   * Add eventHandler
+   *
+   * @param {String} type Event type, e.g. click, mousemove etc.
+   * @param {Function} handler Callback
+   * @returns {DomPointer} Dom Pointer instance
+   */
+  on(type, handler) {
+    if (this.el) {
+      if (this._handlers[type]) {
+        throw Error(`Handler already defined for ${type}`)
+      }
+      this.el.addEventListener(type, handler)
+      this._handlers[type] = handler
+      return this
+    }
+    throw Error('Container element not set')
+  }
+
+  /**
+   *
+   * Remove an event listener from the container element
+   *
+   * @param {String} type Event type, e.g. click, mousemove etc.
+   * @returns {DomPointer} Dom Pointer instance
+   */
+  off(type) {
+    if (this.el) {
+      if (!this._handlers[type]) {
+        throw Error('No event handler installed for ${type}')
+      }
+      this.el.removeEventListener(type, this._handlers[type])
+      delete this._handlers[type]
+      return this
+    }
+    throw Error('Container element not set')
   }
 
   /**
