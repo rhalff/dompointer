@@ -99,17 +99,25 @@ describe('DomPointer', () => {
   })
 
   describe('setAttributes()', () => {
-    it('Can remove attribute', () => {
+    it('remove attributed requires value', () => {
+      const dp = DomPointer.fromHTML(html)
+      expect(() => {
+        dp.setAttributes([
+          {path: ':0:0:0', op: 'remove', name: 'title'}
+        ])
+      }).to.throw(Error)
+    })
+    it('remove attribute', () => {
       const dp = DomPointer.fromHTML(html)
 
       expect(dp.refs.get(':0:0:0').hasAttribute('title')).eql(true)
       dp.setAttributes([
-        { path: ':0:0:0', op: 'remove', name: 'title' }
+        { path: ':0:0:0', op: 'remove', name: 'title', val: 'Heading' }
       ])
 
       expect(dp.refs.get(':0:0:0').hasAttribute('title')).eql(false)
     })
-    it('Can remove field from attribute', () => {
+    it('remove field from attribute', () => {
       const dp = DomPointer.fromHTML(html)
       dp.setAttributes([
         { path: ':0:0:1', op: 'remove', name: 'class', val: 'sub' },
@@ -118,7 +126,7 @@ describe('DomPointer', () => {
       expect(dp.refs.get(':0:0:1').hasAttribute('class')).eql(true)
       expect(dp.refs.get(':0:0:1').getAttribute('class')).eql('title')
     })
-    it('Can add attribute', () => {
+    it('add attribute', () => {
       const dp = DomPointer.fromHTML(html)
 
       dp.setAttributes([
@@ -127,6 +135,26 @@ describe('DomPointer', () => {
 
       expect(dp.refs.get(':0:0:1').hasAttribute('class')).eql(true)
       expect(dp.refs.get(':0:0:1').getAttribute('class')).eql('sub title test')
+    })
+    describe('revert attributes', () => {
+      const dpr = DomPointer.fromHTML(html)
+      let change
+
+      it('revert add', () => {
+        change = [{ path: ':0:0:1', op: 'add', name: 'class', val: 'test' }]
+        dpr.setAttributes(change)
+        dpr.revertAttributes(change)
+        expect(dpr.refs.get(':0:0:1').hasAttribute('class')).eql(true)
+        expect(dpr.refs.get(':0:0:1').getAttribute('class')).eql('sub title')
+      })
+
+      it('revert remove', () => {
+        change = [{ path: ':0:0:1', op: 'remove', name: 'class', val: 'title' }]
+        dpr.setAttributes(change)
+        expect(dpr.refs.get(':0:0:1').getAttribute('class')).eql('sub')
+        dpr.revertAttributes(change)
+        expect(dpr.refs.get(':0:0:1').getAttribute('class')).eql('sub title')
+      })
     })
   })
 

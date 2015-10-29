@@ -342,16 +342,11 @@ export default class DomPointer {
 
   /**
    *
-   * Removes an attribute
-   *
-   * Will remove the attribute entirely:
-   *
-   *  { op: 'remove', path: ':0:1', name: 'class' }
-   *
-   * If you specify a val and the attribute is a class
-   * will only remove the value from the class list:
+   * Removes a value from an attribute
    *
    *  { op: 'remove', path: ':0:1', name: 'class', val: 'warning' }
+   *  { op: 'remove', path: ':0:1', name: 'class', val: 'warning test' }
+   *  { op: 'remove', path: ':0:1', name: 'class', val: ['warning', 'test'] }
    *
    * @param {HTMLElement} el HTML Element
    * @param {Object} change Change object
@@ -363,20 +358,33 @@ export default class DomPointer {
    * @private
    */
   _removeAttribute(el, change) {
+    if (!change.hasOwnProperty('val')) {
+      // TODO: generalize and require all props
+      throw Error('must specify val to remove')
+    }
     const curr = el.getAttribute(change.name)
-    if (change.val) {
-      if (curr) {
-        const items = curr.split(' ')
-        items.splice(
-          items.indexOf(change.val), 1
-        )
-        el.setAttribute(change.name, items.join(' '))
-      }
+    let items = []
+    if (curr) {
+      items = Array.isArray(curr) ? curr : curr.split(' ')
+      items.splice(
+        items.indexOf(change.val), 1
+      )
+    }
+
+    if (items.length) {
+      el.setAttribute(change.name, items.join(' '))
     } else {
       el.removeAttribute(change.name)
     }
   }
 
+  /**
+   *
+   * Set Attributes
+   *
+   * @param {Object[]} map Attribute map
+   * @returns {DomPointer} This instance
+   */
   setAttributes(map = []) {
     for (const change of map) {
       const el = this.refs.get(change.path)
@@ -391,6 +399,23 @@ export default class DomPointer {
         break
       }
     }
+    return this
+  }
+
+  /**
+   *
+   * Takes a changeset as used by setAttributes yet reverts all operations.
+   *
+   * @param {Object[]} map Attribute map
+   * @returns {DomPointer} This instance
+   */
+  revertAttributes(map = []) {
+    this.setAttributes(map.map(change => {
+      change.op = change.op === 'remove' ? 'add' : 'remove'
+      return change
+      // also implement strict removal, throw when it is not there.
+    }))
+    return this
   }
 
   /**
@@ -423,7 +448,7 @@ export default class DomPointer {
   off(type) {
     if (this.el) {
       if (!arguments.length) {
-        Object.keys(this._handlers).forEach((kind) => this.off(kind))
+        Object.keys(this._handlers).forEach(kind => this.off(kind))
       } else {
         if (!this._handlers[type]) {
           throw Error('No event handler installed for ${type}')
@@ -446,7 +471,7 @@ export default class DomPointer {
    * @returns {undefined} Undefined
    */
   _clearOn() {
-    Object.keys(this._handlers).forEach((type) => {
+    Object.keys(this._handlers).forEach(type => {
       this.el.removeEventListener(type, this._handlers[type])
     })
   }
@@ -462,7 +487,7 @@ export default class DomPointer {
    * @returns {undefined} Undefined
    */
   _applyOn(el) {
-    Object.keys(this._handlers).forEach((type) => {
+    Object.keys(this._handlers).forEach(type => {
       el.addEventListener(type, this._handlers[type])
     })
   }
