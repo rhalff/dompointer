@@ -203,6 +203,7 @@ describe('DomPointer', () => {
 
     it('auto alias attributes id & name', () => {
       expect(dp.refs.get('idea')).eql(dp.refs.get(':0:0'))
+      expect(dp._aliases.has('idea')).eql(true)
     })
 
     it('alias should survive reset', () => {
@@ -214,6 +215,18 @@ describe('DomPointer', () => {
     it('set data with aliased parent', () => {
       dp.data(':0', 'Test', 'parent')
       expect(dp.refs.get(':0:0:0').innerHTML).eql('Test')
+    })
+
+    describe('_dealias()', () => {
+      it('return path for alias', () => {
+        expect(dp._dealias('idea')).eql(':0:0')
+      })
+      it('return path for path', () => {
+        expect(dp._dealias(':0:0')).eql(':0:0')
+      })
+      it('throw if alias does not exist', () => {
+        expect(() => dp._dealias('not_exist')).to.throw(/Unknown alias/)
+      })
     })
   })
 

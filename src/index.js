@@ -161,6 +161,7 @@ export default class DomPointer {
   _alias(alias, path) {
     if (validAlias.test(alias)) {
       this.refs.set(alias, this.getRef(path))
+      this._aliases.set(alias, path)
       return this
     }
 
@@ -177,7 +178,6 @@ export default class DomPointer {
    */
   alias(alias, path) {
     this._alias(alias, path)
-    this._aliases.set(alias, path)
   }
 
   /**
@@ -279,7 +279,11 @@ export default class DomPointer {
    * @private
    */
   _dealias(path) {
-    return this._aliases.has(path) ? this._aliases.get(path) : path
+    if (path[0] === ':') return path
+    if (this._aliases.has(path)) {
+      return this._aliases.get(path)
+    }
+    throw Error(`Unknown alias ${path}`)
   }
 
   /**
