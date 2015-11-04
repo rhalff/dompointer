@@ -7,7 +7,7 @@ import JediHTML from './fixture/jedi'
 describe('DomPointer', () => {
   const html = `
     <div>
-      <div>
+      <div id="idea">
         <h1 title="Heading" class="heading"></h1>
         <h3 class="sub title"></h3>
       </div>
@@ -201,6 +201,10 @@ describe('DomPointer', () => {
       expect(dp.refs.get('subtitle')).eql(dp.refs.get(':0:0:1'))
     })
 
+    it('auto alias attributes id & name', () => {
+      expect(dp.refs.get('idea')).eql(dp.refs.get(':0:0'))
+    })
+
     it('alias should survive reset', () => {
       dp.reset()
       expect(dp.refs.get('heading')).eql(dp.refs.get(':0:0:0'))
@@ -212,6 +216,7 @@ describe('DomPointer', () => {
       expect(dp.refs.get(':0:0:0').innerHTML).eql('Test')
     })
   })
+
   describe('Events', () => {
     const dp = DomPointer.fromHTML(html)
     dp.setElement(document.createElement('div'))

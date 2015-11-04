@@ -35,6 +35,15 @@ export default class DomPointer {
      */
     this._aliases = new Map()
 
+    /**
+     * The values of these attributes will be used
+     * to automatically register aliases
+     *
+     * @type {string[]}
+     * @private
+     */
+    this.aliasAttrs = ['id', 'name']
+
     this._opts = {
       comments: true
     }
@@ -75,7 +84,20 @@ export default class DomPointer {
       if (node.nodeType === Node.COMMENT_NODE) {
         node = this._convertCommentToTextNode(node)
       }
-      this.refs.set(':' + arr.join(':'), node)
+
+      const path = ':' + arr.join(':')
+
+      this.refs.set(path, node)
+
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        for (const attr of this.aliasAttrs) {
+          const val = node.getAttribute(attr)
+          if (val) {
+            this._alias(val, path)
+            break
+          }
+        }
+      }
 
       if (node.childNodes.length) {
         this._parse(node, arr)
@@ -192,6 +214,7 @@ export default class DomPointer {
     }
     return paths
   }
+
   /**
    *
    * Create DomPointer from an existing element
