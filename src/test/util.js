@@ -18,3 +18,7 @@ export function click(el) {
   )
   el.dispatchEvent(ev)
 }
+
+export function copy(obj) {
+  return JSON.parse(JSON.stringify(obj))
+}

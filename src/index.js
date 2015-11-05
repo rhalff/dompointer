@@ -441,9 +441,12 @@ export default class DomPointer {
    */
   revertAttributes(map = []) {
     this.setAttributes(map.map(change => {
-      change.op = change.op === 'remove' ? 'add' : 'remove'
-      return change
-      // also implement strict removal, throw when it is not there.
+      return {
+        path: change.path,
+        op: change.op === 'remove' ? 'add' : 'remove',
+        name: change.name,
+        val: change.val // undefined is not set
+      }
     }))
     return this
   }

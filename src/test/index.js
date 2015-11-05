@@ -1,7 +1,7 @@
 import {} from 'babel/register'
 import { expect, assert } from 'chai'
 import DomPointer from '../index'
-import { createElement, click } from './util'
+import { createElement, click, copy } from './util'
 import JediHTML from './fixture/jedi'
 
 describe('DomPointer', () => {
@@ -151,18 +151,22 @@ describe('DomPointer', () => {
 
       it('revert add', () => {
         change = [{ path: ':0:0:1', op: 'add', name: 'class', val: 'test' }]
+        const orig = copy(change)
         dpr.setAttributes(change)
         dpr.revertAttributes(change)
         expect(dpr.refs.get(':0:0:1').hasAttribute('class')).eql(true)
         expect(dpr.refs.get(':0:0:1').getAttribute('class')).eql('sub title')
+        expect(orig).to.eql(change)
       })
 
       it('revert remove', () => {
         change = [{ path: ':0:0:1', op: 'remove', name: 'class', val: 'title' }]
+        const orig = copy(change)
         dpr.setAttributes(change)
         expect(dpr.refs.get(':0:0:1').getAttribute('class')).eql('sub')
         dpr.revertAttributes(change)
         expect(dpr.refs.get(':0:0:1').getAttribute('class')).eql('sub title')
+        expect(orig).to.eql(change)
       })
     })
   })
