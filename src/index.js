@@ -393,9 +393,12 @@ export default class DomPointer {
     let items = []
     if (curr) {
       items = Array.isArray(curr) ? curr : curr.split(' ')
-      items.splice(
-        items.indexOf(change.val), 1
-      )
+      const idx = items.indexOf(change.val)
+      if (idx >= 0) {
+        items.splice(idx, 1)
+      } else {
+        throw Error(`Attribute value ${change.val} not found`)
+      }
     }
 
     if (items.length) {

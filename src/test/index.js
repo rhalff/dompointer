@@ -126,6 +126,15 @@ describe('DomPointer', () => {
       expect(dp.refs.get(':0:0:1').hasAttribute('class')).eql(true)
       expect(dp.refs.get(':0:0:1').getAttribute('class')).eql('title')
     })
+    it('remove unknown field should throw', () => {
+      const dp = DomPointer.fromHTML(html)
+
+      expect(() => {
+        dp.setAttributes([
+          { path: ':0:0:1', op: 'remove', name: 'class', val: 'not-exist' },
+        ])
+      }).to.throw(/not found/)
+    })
     it('add attribute', () => {
       const dp = DomPointer.fromHTML(html)
 
