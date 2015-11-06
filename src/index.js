@@ -279,7 +279,10 @@ export default class DomPointer {
    * @private
    */
   _dealias(path) {
-    if (path[0] === ':') return path
+    if (path[0] === ':') {
+      this.getRef(path) // ensure it exists
+      return path
+    }
     if (this._aliases.has(path)) {
       return this._aliases.get(path)
     }
