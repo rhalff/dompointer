@@ -1,7 +1,7 @@
 const validAlias = /^[A-Za-z]+[\w\-]*$/
 
 export default class DomPointerBase {
-  constructor() {
+  constructor(node) {
     /**
      *
      * Reference map
@@ -40,12 +40,12 @@ export default class DomPointerBase {
 
     /**
      *
-     * The dom being prepared, while it's not yet placed within the dom itself.
+     * The documentFragment or HTMLElement acted upon
      *
-     * @type {DocumentFragment}
+     * @type {DocumentFragment|HTMLElement}
      * @private
      */
-    this._swp = document.createDocumentFragment()
+    this.node = node
   }
 
   _parse(el, _p = []) {

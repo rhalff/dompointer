@@ -11,7 +11,7 @@ export default class DomPointer extends DomPointerBase {
      *
      * @type {DocumentFragment}
      */
-    this.template = new DomPointerBase()
+    this.template = new DomPointerBase(document.createDocumentFragment())
 
     /**
      *
@@ -38,13 +38,7 @@ export default class DomPointer extends DomPointerBase {
      */
     this.change = new Set()
 
-    /**
-     *
-     * Target element where this template is rendered
-     *
-     * @type {HTMLElement}
-     */
-    this.el = undefined
+    this.node = document.createDocumentFragment()
   }
 
   /**
@@ -56,11 +50,11 @@ export default class DomPointer extends DomPointerBase {
    */
   setElement(el) {
     if (el && el.nodeType === Node.ELEMENT_NODE) {
-      if (this.el) {
+      if (this.dom.node) {
         this._clearOn()
       }
-      this.el = el
-      this._applyOn(this.el)
+      this.dom.node = el
+      this._applyOn(this.dom.node)
       return this
     }
     throw Error('Element node type must be ELEMENT_NODE')
@@ -78,7 +72,7 @@ export default class DomPointer extends DomPointerBase {
     const path = []
     while (node.parentNode) {
       path.push(Array.prototype.indexOf.call(node.parentNode.childNodes, node))
-      if (node.parentNode === this.el) {
+      if (node.parentNode === this.dom.node) {
         break
       }
       node = node.parentNode
@@ -114,11 +108,11 @@ export default class DomPointer extends DomPointerBase {
     dp.setOpts(opts)
     clean(el, dp._opts.comments)
     dp.setElement(el)
-    dp.template._swp.appendChild(
+    dp.template.node.appendChild(
       el.cloneNode(true)
     )
     dp.reset()
-    dp.template.parse(dp.template._swp)
+    dp.template.parse(dp.template.node)
     return dp
   }
 
@@ -152,9 +146,9 @@ export default class DomPointer extends DomPointerBase {
     temp.innerHTML = html
     clean(temp, this._opts.comments)
     while (temp.firstChild) {
-      this.template._swp.appendChild(temp.firstChild)
+      this.template.node.appendChild(temp.firstChild)
     }
-    this.template.parse(this.template._swp)
+    this.template.parse(this.template.node)
     return this
   }
 
@@ -307,11 +301,11 @@ export default class DomPointer extends DomPointerBase {
    * @returns {DomPointer} Dom Pointer instance
    */
   on(type, handler) {
-    if (this.el) {
+    if (this.dom.node) {
       if (this._handlers[type]) {
         throw Error(`Handler already defined for ${type}`)
       }
-      this.el.addEventListener(type, handler)
+      this.dom.node.addEventListener(type, handler)
       this._handlers[type] = handler
       return this
     }
@@ -326,14 +320,14 @@ export default class DomPointer extends DomPointerBase {
    * @returns {DomPointer} Dom Pointer instance
    */
   off(type) {
-    if (this.el) {
+    if (this.dom.node) {
       if (!arguments.length) {
         Object.keys(this._handlers).forEach(kind => this.off(kind))
       } else {
         if (!this._handlers[type]) {
           throw Error('No event handler installed for ${type}')
         }
-        this.el.removeEventListener(type, this._handlers[type])
+        this.dom.node.removeEventListener(type, this._handlers[type])
         delete this._handlers[type]
       }
       return this
@@ -352,7 +346,7 @@ export default class DomPointer extends DomPointerBase {
    */
   _clearOn() {
     Object.keys(this._handlers).forEach(type => {
-      this.el.removeEventListener(type, this._handlers[type])
+      this.dom.node.removeEventListener(type, this._handlers[type])
     })
   }
 
@@ -374,29 +368,29 @@ export default class DomPointer extends DomPointerBase {
 
   /**
    *
-   * Resets and moves operation to the in-memory _swp fragment.
-   * All operations will take place against _swp.
+   * Resets and moves operation to the in-memory node fragment.
+   * All operations will take place against node.
    *
    * Use the remove parameter to directly remove the current rendering
    * from the dom, else it will be replaced once render() is called again.
    *
    * When a fragment is placed it's references become live
    *
-   * Reset sets the context to _swp again instead of what is present within the dom.
+   * Reset sets the context to node again instead of what is present within the dom.
    *
    * @param {Boolean} remove Whether to remove the current rendering from the dom
    * @returns {DomPointer} Dom Pointer instance
    */
   reset(remove) {
-    if (remove && this.el) {
-      this.el.innerHTML = ''
+    if (remove && this.dom.node) {
+      this.dom.node.innerHTML = ''
     }
     this.refs.clear()
-    this._swp = document.createDocumentFragment()
-    this._swp.appendChild(
-      this.template._swp.cloneNode(true)
+    this.node = document.createDocumentFragment()
+    this.node.appendChild(
+      this.template.node.cloneNode(true)
     )
-    this.parse(this._swp)
+    this.parse(this.node)
     return this
   }
 
@@ -408,8 +402,8 @@ export default class DomPointer extends DomPointerBase {
    * @return {HTMLElement} The old childNode
    */
   render() {
-    if (this.el) {
-      if (!this._swp) {
+    if (this.dom.node) {
+      if (!this.node) {
         throw Error('Empty swap')
       }
 
@@ -417,7 +411,7 @@ export default class DomPointer extends DomPointerBase {
       this.dom.refs = new Map(this.refs)
       this.dom._aliases = new Map(this._aliases)
 
-      const workingSet = this._swp.cloneNode(true)
+      const workingSet = this.node.cloneNode(true)
       for (const path of this.change) {
         this.dom.refs.get(path).parentNode.replaceChild(
           this.refs.get(path).cloneNode(true), // new
@@ -425,8 +419,8 @@ export default class DomPointer extends DomPointerBase {
         )
       }
       this.change.clear()
-      this._swp = workingSet
-      return this.el
+      this.node = workingSet
+      return this.dom.node
     }
     throw Error('Target element not set, use setElement() first')
   }

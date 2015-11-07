@@ -268,7 +268,7 @@ describe('DomPointer', () => {
     it('on()', (done) => {
       dp.on('click', () => done())
       expect(dp._handlers).to.have.ownProperty('click')
-      click(dp.el)
+      click(dp.dom.node)
     })
 
     it('can only install one handler', () => {
@@ -298,9 +298,9 @@ describe('DomPointer', () => {
         }
       })
       expect(dp._handlers).to.have.ownProperty('click')
-      click(dp.el)
+      click(dp.dom.node)
       dp.setElement(document.createElement('div'))
-      click(dp.el)
+      click(dp.dom.node)
     })
     it('persist throughout render', () => {
       expect(dp._handlers).to.have.ownProperty('click')
