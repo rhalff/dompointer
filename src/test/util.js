@@ -1,8 +1,9 @@
+import { clean } from 'dom-clean'
 export function createElement(html) {
   const div = document.createElement('div')
   div.innerHTML = html
-
-  return div
+  clean(div)
+  return div.firstChild
 }
 
 export function click(el) {
