@@ -136,16 +136,26 @@ export default class DomPointerBase {
 
   /**
    *
-   * Dealias
+   * Dealias a path
+   *
+   * Both path or container path can be an alias.
+   *
+   * Will returned the resolved path
+   *
+   * Logic for nested aliases is not there yet.
+   *
+   * These aliases would be scoped to the enclosing container.
    *
    * @param {String} path Path to be dealiased
+   * @param {String} cpath Container path
    * @returns {String} Dealiased path
    * @private
    */
-  _dealias(path) {
+  _dealias(path, cpath) {
+    const fpath = cpath ? this._dealias(cpath) : ''
     if (path[0] === ':') {
-      this.getRef(path) // ensure it exists
-      return path
+      this.getRef(fpath + path) // ensure it exists
+      return fpath + path
     }
     if (this._aliases.has(path)) {
       return this._aliases.get(path)

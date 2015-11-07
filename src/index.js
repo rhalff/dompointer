@@ -24,6 +24,22 @@ export default class DomPointer extends DomPointerBase {
 
     /**
      *
+     * Contains the dom references
+     *
+     * @type {{}}
+     */
+    this.domRefs = new Map()
+
+    /**
+     *
+     * Contains the changed references
+     *
+     * @type {{}}
+     */
+    this.change = new Set()
+
+    /**
+     *
      * Target element where this template is rendered
      *
      * @type {HTMLElement}
@@ -102,6 +118,7 @@ export default class DomPointer extends DomPointerBase {
       el.cloneNode(true)
     )
     dp.reset()
+    dp.template.parse(dp.template._swp)
     return dp
   }
 
@@ -118,7 +135,7 @@ export default class DomPointer extends DomPointerBase {
   static fromHTML(html, opts) {
     const dp = new DomPointer()
     dp.setOpts(opts)
-    dp.setHTML(html)
+    dp._setHTML(html)
     dp.reset()
     return dp
   }
@@ -130,13 +147,14 @@ export default class DomPointer extends DomPointerBase {
    * @param {String} html HTML String
    * @returns {DomPointer} Dom Pointer instance
    */
-  setHTML(html) {
+  _setHTML(html) {
     const temp = document.createElement('div')
     temp.innerHTML = html
     clean(temp, this._opts.comments)
     while (temp.firstChild) {
       this.template._swp.appendChild(temp.firstChild)
     }
+    this.template.parse(this.template._swp)
     return this
   }
 
@@ -155,7 +173,7 @@ export default class DomPointer extends DomPointerBase {
    * @returns {DomPointer} Dom Pointer instance
    */
   data(path, val, cpath, append) {
-    const fpath = cpath ? this._dealias(cpath) + path : path
+    const fpath = cpath ? this._dealias(path, cpath) : this._dealias(path)
     const el = this.getRef(fpath)
     const method = el.nodeType === Node.TEXT_NODE ? 'nodeValue' : 'innerHTML'
     if (append) {
@@ -163,6 +181,7 @@ export default class DomPointer extends DomPointerBase {
     } else {
       el[method] = val
     }
+    this.change.add(fpath)
     return this
   }
 
@@ -255,6 +274,7 @@ export default class DomPointer extends DomPointerBase {
         this._addAttribute(el, change)
         break
       }
+      this.change.add(this._dealias(change.path))
     }
     return this
   }
@@ -372,13 +392,11 @@ export default class DomPointer extends DomPointerBase {
       this.el.innerHTML = ''
     }
     this.refs.clear()
-    this._clearOn()
     this._swp = document.createDocumentFragment()
     this._swp.appendChild(
       this.template._swp.cloneNode(true)
     )
     this.parse(this._swp)
-    this._applyOn(this._swp)
     return this
   }
 
@@ -391,8 +409,20 @@ export default class DomPointer extends DomPointerBase {
    */
   render() {
     if (this.el) {
-      this.el.innerHTML = ''
-      return this.el.appendChild(this._swp) // automatically clears this._swp
+      if (!this._swp) {
+        throw Error('Empty swap')
+      }
+      this.domRefs = new Map(this.refs)
+      const workingSet = this._swp.cloneNode(true)
+      for (const path of this.change) {
+        this.domRefs.get(path).parentNode.replaceChild(
+          this.refs.get(path).cloneNode(true), // new
+          this.domRefs.get(path) // old within the dom
+        )
+      }
+      this.change.clear()
+      this._swp = workingSet
+      return this.el
     }
     throw Error('Target element not set, use setElement() first')
   }
