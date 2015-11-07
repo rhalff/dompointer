@@ -28,7 +28,7 @@ export default class DomPointer extends DomPointerBase {
      *
      * @type {{}}
      */
-    this.domRefs = new Map()
+    this.dom = new DomPointerBase()
 
     /**
      *
@@ -412,12 +412,16 @@ export default class DomPointer extends DomPointerBase {
       if (!this._swp) {
         throw Error('Empty swap')
       }
-      this.domRefs = new Map(this.refs)
+
+      // quick copy
+      this.dom.refs = new Map(this.refs)
+      this.dom._aliases = new Map(this._aliases)
+
       const workingSet = this._swp.cloneNode(true)
       for (const path of this.change) {
-        this.domRefs.get(path).parentNode.replaceChild(
+        this.dom.refs.get(path).parentNode.replaceChild(
           this.refs.get(path).cloneNode(true), // new
-          this.domRefs.get(path) // old within the dom
+          this.dom.refs.get(path) // old within the dom
         )
       }
       this.change.clear()
