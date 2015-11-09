@@ -400,7 +400,7 @@ export default class DomPointer extends DomPointerBase {
    * @returns {DomPointer} Dom Pointer instance
    */
   placeNodes(target, source) {
-    target.innerHTML = ''
+    target.node.innerHTML = ''
     for (const node of source.node.childNodes) {
       target.node.appendChild(node.cloneNode(true))
     }

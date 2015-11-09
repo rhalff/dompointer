@@ -14,6 +14,18 @@ export function printFrag(df) {
   console.log(inner.innerHTML)
 }
 
+export function compareHTML(...nodes) {
+  return nodes.map((el) => {
+    const inner = document.createElement('div')
+    for (const node of el.childNodes) {
+      inner.appendChild(node.cloneNode(true))
+    }
+    return inner.innerHTML
+  }).every((el, idx, arr) => {
+    return el === arr[0]
+  })
+}
+
 export function click(el) {
   const ev = document.createEvent('MouseEvents')
   ev.initMouseEvent( /* deprecated but works */

@@ -1,7 +1,7 @@
 import {} from 'babel/register'
 import { expect, assert } from 'chai'
 import DomPointer from '../index'
-import { createElement, click, copy } from './util'
+import { createElement, click, copy, compareHTML } from './util'
 import JediHTML from './fixture/jedi'
 
 describe('DomPointer', () => {
@@ -328,7 +328,7 @@ describe('DomPointer', () => {
 
     it('dom.node, template.node and this.node should have same structure', () => {
       ['firstChild', 'secondChild'].forEach((name, idx) => {
-        [dp.template, dp.dom, dp].forEach((type) => {
+        [dp.template, dp, dp.dom].forEach((type) => {
           expect(type.node.childNodes[idx].id).to.eql(name)
           expect(type.refs.get(':' + idx).id).to.eql(name)
         })
@@ -337,20 +337,21 @@ describe('DomPointer', () => {
 
     it('should render create()', () => {
       dp = DomPointer.create(createElement(html2))
-      const div = document.createElement('div')
-      dp.setElement(div)
       dp.render()
     })
 
     it('dom.node, template.node and this.node should have same structure', () => {
       ['firstChild', 'secondChild'].forEach((name, idx) => {
-        [dp, dp.dom, dp.template].forEach((type) => {
+        [dp.template, dp, dp.dom].forEach((type) => {
           expect(type.node.childNodes[idx].id).to.eql(name)
           expect(type.refs.get(':' + idx).id).to.eql(name)
           expect(type.refs.get(name).id).to.eql(name)
           expect(type.aliases.get(name)).to.eql(':' + idx)
         })
       })
+    })
+    it('Initialy all html matches', () => {
+      expect(compareHTML(dp.node, dp.template.node, dp.dom.node)).to.eql(true)
     })
   })
 
