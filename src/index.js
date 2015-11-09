@@ -382,6 +382,7 @@ export default class DomPointer extends DomPointerBase {
   reset(remove) {
     if (remove && this.dom.node) {
       this.dom.node.innerHTML = ''
+      this.dom.refs.clear()
       this.rendered = false
     }
     this.refs.clear()

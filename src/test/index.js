@@ -361,12 +361,24 @@ describe('DomPointer', () => {
       dp.reset()
     })
     it('should reset and remove', () => {
-      const dp = DomPointer.fromHTML('<div>Some text<!-- HERE --></div>')
+      const html3 = '<div>Some text<!-- HERE --></div>'
+      const dummy = document.createElement('div')
+      const dp = DomPointer.fromHTML(html3)
       const oldRef = dp.refs.get(':0')
-      const oldSize = oldRef.size
+      const oldSize = dp.refs.size
+      dp.setElement(dummy)
+      dp.render()
+      const oldDomRef = dp.dom.refs.get(':0')
+      const oldDomSize = dp.dom.refs.size
       dp.reset(true)
       assert.isTrue(oldRef !== dp.refs.get(':0'))
-      assert.isTrue(oldSize !== dp.refs.size)
+      assert.isTrue(oldSize === dp.refs.size)
+      assert.isTrue(dp.dom.node.childNodes.length === 0)
+      assert.isTrue(dp.dom.refs.size === 0)
+      dp.render()
+      assert.isTrue(oldDomRef !== dp.dom.refs.get(':0'))
+      assert.isTrue(oldSize === dp.refs.size)
+      assert.isTrue(oldDomSize === dp.dom.refs.size)
     })
   })
 })
