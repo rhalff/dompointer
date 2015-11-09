@@ -163,8 +163,8 @@ export default class DomPointerBase {
    * @returns {String} Dealiased path
    * @private
    */
-  _dealias(path, cpath) {
-    const fpath = cpath ? this._dealias(cpath) : ''
+  dealias(path, cpath) {
+    const fpath = cpath ? this.dealias(cpath) : ''
     if (path[0] === ':') {
       this.getRef(fpath + path) // ensure it exists
       return fpath + path

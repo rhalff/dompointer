@@ -175,7 +175,7 @@ export default class DomPointer extends DomPointerBase {
    * @returns {DomPointer} Dom Pointer instance
    */
   data(path, val, cpath, append) {
-    const fpath = cpath ? this._dealias(path, cpath) : this._dealias(path)
+    const fpath = cpath ? this.dealias(path, cpath) : this.dealias(path)
     const el = this.getRef(fpath)
     const method = el.nodeType === Node.TEXT_NODE ? 'nodeValue' : 'innerHTML'
     if (append) {
@@ -276,7 +276,7 @@ export default class DomPointer extends DomPointerBase {
         this._addAttribute(el, change)
         break
       }
-      this.change.add(this._dealias(change.path))
+      this.change.add(this.dealias(change.path))
     }
     return this
   }

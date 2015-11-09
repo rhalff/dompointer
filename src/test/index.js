@@ -245,18 +245,18 @@ describe('DomPointer', () => {
       expect(dp.refs.get(':0:0:0').innerHTML).eql('Test')
     })
 
-    describe('_dealias()', () => {
+    describe('dealias()', () => {
       it('return path for alias', () => {
-        expect(dp._dealias('idea')).eql(':0:0')
+        expect(dp.dealias('idea')).eql(':0:0')
       })
       it('return path for path', () => {
-        expect(dp._dealias(':0:0')).eql(':0:0')
+        expect(dp.dealias(':0:0')).eql(':0:0')
       })
       it('throw if path does not exist', () => {
-        expect(() => dp._dealias(':1:0:1')).to.throw(/Unknown path/)
+        expect(() => dp.dealias(':1:0:1')).to.throw(/Unknown path/)
       })
       it('throw if alias does not exist', () => {
-        expect(() => dp._dealias('not_exist')).to.throw(/Unknown alias/)
+        expect(() => dp.dealias('not_exist')).to.throw(/Unknown alias/)
       })
     })
   })
