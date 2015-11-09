@@ -231,7 +231,7 @@ describe('DomPointer', () => {
 
     it('auto alias attributes id & name', () => {
       expect(dp.refs.get('idea')).eql(dp.refs.get(':0:0'))
-      expect(dp._aliases.has('idea')).eql(true)
+      expect(dp.aliases.has('idea')).eql(true)
     })
 
     it('alias should survive reset', () => {
@@ -308,6 +308,49 @@ describe('DomPointer', () => {
       expect(dp._handlers).to.have.ownProperty('click')
       dp.render()
       expect(dp._handlers).to.have.ownProperty('click')
+    })
+  })
+
+  describe('render()', () => {
+    const html2 = `
+        <div id="firstChild">
+         Some text <!-- HERE -->
+        </div>
+        <div id="secondChild"></div>
+      `
+    let dp
+    it('should render fromHTML', () => {
+      dp = DomPointer.fromHTML(html2)
+      const div = document.createElement('div')
+      dp.setElement(div)
+      dp.render()
+    })
+
+    it('dom.node, template.node and this.node should have same structure', () => {
+      ['firstChild', 'secondChild'].forEach((name, idx) => {
+        [dp.template, dp.dom, dp].forEach((type) => {
+          expect(type.node.childNodes[idx].id).to.eql(name)
+          expect(type.refs.get(':' + idx).id).to.eql(name)
+        })
+      })
+    })
+
+    it('should render create()', () => {
+      dp = DomPointer.create(createElement(html2))
+      const div = document.createElement('div')
+      dp.setElement(div)
+      dp.render()
+    })
+
+    it('dom.node, template.node and this.node should have same structure', () => {
+      ['firstChild', 'secondChild'].forEach((name, idx) => {
+        [dp, dp.dom, dp.template].forEach((type) => {
+          expect(type.node.childNodes[idx].id).to.eql(name)
+          expect(type.refs.get(':' + idx).id).to.eql(name)
+          expect(type.refs.get(name).id).to.eql(name)
+          expect(type.aliases.get(name)).to.eql(':' + idx)
+        })
+      })
     })
   })
 

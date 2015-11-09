@@ -1,7 +1,7 @@
 const validAlias = /^[A-Za-z]+[\w\-]*$/
 
 export default class DomPointerBase {
-  constructor(node) {
+  constructor() {
     /**
      *
      * Reference map
@@ -23,7 +23,7 @@ export default class DomPointerBase {
      * @type {Map}
      * @private
      */
-    this._aliases = new Map()
+    this.aliases = new Map()
 
     /**
      * The values of these attributes will be used
@@ -45,7 +45,7 @@ export default class DomPointerBase {
      * @type {DocumentFragment|HTMLElement}
      * @private
      */
-    this.node = node
+    this.node = document.createDocumentFragment()
   }
 
   _parse(el, _p = []) {
@@ -62,6 +62,8 @@ export default class DomPointerBase {
 
       this.refs.set(path, node)
 
+      // do alias maintainance here.
+      // keep the aliases but remove them from refs
       if (node.nodeType === Node.ELEMENT_NODE) {
         for (const attr of this.aliasAttrs) {
           const val = node.getAttribute(attr)
@@ -89,10 +91,16 @@ export default class DomPointerBase {
    * @returns {DomPointer} This instance
    */
   parse(el) {
-    this._parse(el)
+    this.refs.clear()
+    this._parse(el || this.node)
 
-    for (const [alias, path] of this._aliases) {
-      this._alias(alias, path)
+    for (const [alias, path] of this.aliases) {
+      if (this.refs.has(path)) {
+        this._alias(alias, path)
+      } else {
+        // alias is not within the view at the moment
+        this.refs.set(alias, null)
+      }
     }
 
     return this
@@ -115,7 +123,7 @@ export default class DomPointerBase {
   _alias(alias, path) {
     if (validAlias.test(alias)) {
       this.refs.set(alias, this.getRef(path))
-      this._aliases.set(alias, path)
+      this.aliases.set(alias, path)
       return this
     }
 
@@ -132,6 +140,10 @@ export default class DomPointerBase {
    */
   alias(alias, path) {
     this._alias(alias, path)
+    // TODO: do this smarter
+    // _aliases could be a
+    this.dom.aliases.set(alias, path)
+    this.template.aliases.set(alias, path)
   }
 
   /**
@@ -157,8 +169,8 @@ export default class DomPointerBase {
       this.getRef(fpath + path) // ensure it exists
       return fpath + path
     }
-    if (this._aliases.has(path)) {
-      return this._aliases.get(path)
+    if (this.aliases.has(path)) {
+      return this.aliases.get(path)
     }
     throw Error(`Unknown alias ${path}`)
   }
@@ -176,6 +188,18 @@ export default class DomPointerBase {
   }
 
   /**
+   * Set Node
+   *
+   * @param {HTMLElement|DocumentFragment} node And HTMLElement or DocumentFragment
+   * @returns {DomPointer} This instance
+   */
+  setNode(node) {
+    this.node = node
+    this.parse()
+    return this
+  }
+
+  /**
    *
    * Get reference by path.
    *
@@ -188,5 +212,22 @@ export default class DomPointerBase {
     }
 
     throw Error('Unknown path: ' + path)
+  }
+
+  /**
+   *
+   * Update reference by path.
+   *
+   * used to update a path.
+   *
+   * Will automatically update the alias if one is defined
+   *
+   * @param {String} path path
+   * @param {HTMLElement} el HTML Element
+   * @returns {HTMLElement} HTML Element
+   */
+  updateRef(path, el) {
+    this.getRef(path)
+    this.refs.set(path, el)
   }
 }

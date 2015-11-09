@@ -3,7 +3,7 @@ export function createElement(html) {
   const div = document.createElement('div')
   div.innerHTML = html
   clean(div)
-  return div.firstChild
+  return div
 }
 
 export function printFrag(df) {

@@ -1,5 +1,7 @@
 import { clean } from 'dom-clean'
 import DomPointerBase from './base'
+import DomPointerDom from './dom'
+import DomPointerTemplate from './template'
 
 export default class DomPointer extends DomPointerBase {
   constructor() {
@@ -11,7 +13,15 @@ export default class DomPointer extends DomPointerBase {
      *
      * @type {DocumentFragment}
      */
-    this.template = new DomPointerBase(document.createDocumentFragment())
+    this.template = new DomPointerTemplate()
+
+    /**
+     *
+     * Contains the dom references
+     *
+     * @type {DomPointerDom}
+     */
+    this.dom = new DomPointerDom()
 
     /**
      *
@@ -24,21 +34,39 @@ export default class DomPointer extends DomPointerBase {
 
     /**
      *
-     * Contains the dom references
-     *
-     * @type {{}}
-     */
-    this.dom = new DomPointerBase()
-
-    /**
-     *
      * Contains the changed references
      *
-     * @type {{}}
+     * @type {Set}
      */
     this.change = new Set()
 
-    this.node = document.createDocumentFragment()
+    /**
+     *
+     * @type {Boolean}
+     */
+    this.rendered = false
+  }
+
+  /**
+   *
+   * Create DomPointer from an existing element
+   *
+   * @param {HTMLElement} el HTMLElement
+   * @param {Object} opts Options object
+   * @return {DomPointer} Dom Pointer instance
+   */
+  static create(el, opts) {
+    const dp = new DomPointer()
+    dp.setOpts(opts)
+    clean(el, dp._opts.comments)
+    dp.setElement(el)
+    for (const node of el.childNodes) {
+      dp.template.node.appendChild(node.cloneNode(true))
+    }
+    // ok all of these have to do the same logic, much can be reduced.
+    dp.template.parse()
+    dp.reset()
+    return dp
   }
 
   /**
@@ -53,8 +81,9 @@ export default class DomPointer extends DomPointerBase {
       if (this.dom.node) {
         this._clearOn()
       }
-      this.dom.node = el
+      this.dom.setNode(el)
       this._applyOn(this.dom.node)
+      this.rendered = false
       return this
     }
     throw Error('Element node type must be ELEMENT_NODE')
@@ -97,27 +126,6 @@ export default class DomPointer extends DomPointerBase {
 
   /**
    *
-   * Create DomPointer from an existing element
-   *
-   * @param {HTMLElement} el HTMLElement
-   * @param {Object} opts Options object
-   * @return {DomPointer} Dom Pointer instance
-   */
-  static create(el, opts) {
-    const dp = new DomPointer()
-    dp.setOpts(opts)
-    clean(el, dp._opts.comments)
-    dp.setElement(el)
-    dp.template.node.appendChild(
-      el.cloneNode(true)
-    )
-    dp.reset()
-    dp.template.parse(dp.template.node)
-    return dp
-  }
-
-  /**
-   *
    * Create DomPointer from a string of HTML
    *
    * Use setElement to set the target element for rendering
@@ -148,7 +156,7 @@ export default class DomPointer extends DomPointerBase {
     while (temp.firstChild) {
       this.template.node.appendChild(temp.firstChild)
     }
-    this.template.parse(this.template.node)
+    this.template.parse()
     return this
   }
 
@@ -368,22 +376,13 @@ export default class DomPointer extends DomPointerBase {
 
   /**
    *
-   * Resets and moves operation to the in-memory node fragment.
-   * All operations will take place against node.
-   *
-   * Use the remove parameter to directly remove the current rendering
-   * from the dom, else it will be replaced once render() is called again.
-   *
-   * When a fragment is placed it's references become live
-   *
-   * Reset sets the context to node again instead of what is present within the dom.
-   *
    * @param {Boolean} remove Whether to remove the current rendering from the dom
    * @returns {DomPointer} Dom Pointer instance
    */
   reset(remove) {
     if (remove && this.dom.node) {
       this.dom.node.innerHTML = ''
+      this.rendered = false
     }
     this.refs.clear()
     this.node = document.createDocumentFragment()
@@ -395,31 +394,59 @@ export default class DomPointer extends DomPointerBase {
   }
 
   /**
+   *
+   * @param {DomPointerBase} target target to fill
+   * @param {DomPointerBase} source source to clone
+   * @returns {DomPointer} Dom Pointer instance
+   */
+  placeNodes(target, source) {
+    target.innerHTML = ''
+    for (const node of source.node.childNodes) {
+      target.node.appendChild(node.cloneNode(true))
+    }
+    target.parse()
+  }
+
+  /**
    * (Re)renders  the template.
    *
    * When render is called the current swp empties and the context of the references will be the live dom.
    *
-   * @return {HTMLElement} The old childNode
+   * @return {HTMLElement} The container
    */
   render() {
     if (this.dom.node) {
       if (!this.node) {
-        throw Error('Empty swap')
+        throw Error('Empty node')
       }
-
-      // quick copy
-      this.dom.refs = new Map(this.refs)
-      this.dom._aliases = new Map(this._aliases)
-
-      const workingSet = this.node.cloneNode(true)
+      if (!this.rendered) {
+        this.placeNodes(this.dom, this.template)
+        this.rendered = true
+      }
       for (const path of this.change) {
-        this.dom.refs.get(path).parentNode.replaceChild(
-          this.refs.get(path).cloneNode(true), // new
-          this.dom.refs.get(path) // old within the dom
-        )
+        if (!this.refs.has(path)) {
+          // Change scheduled but reference is gone
+          continue
+        }
+
+        const newNode = this.refs.get(path).cloneNode(true)
+
+        const node = this.dom.refs.get(path)
+        if (!node) {
+          throw Error(`Dom Node with path ${path} does not exist`)
+        }
+
+        if (node.parentNode) {
+          node.parentNode.replaceChild(newNode, node)
+        } else {
+          throw Error(`Dom Node with path ${path} has no parentNode`)
+        }
+
+        // todo: only updateRef
+        // this.dom.updateRef(path, newNode)
+        this.dom.parse()
       }
       this.change.clear()
-      this.node = workingSet
       return this.dom.node
     }
     throw Error('Target element not set, use setElement() first')
