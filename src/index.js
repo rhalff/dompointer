@@ -178,10 +178,21 @@ export default class DomPointer extends DomPointerBase {
     const fpath = cpath ? this.dealias(path, cpath) : this.dealias(path)
     const el = this.getRef(fpath)
     const method = el.nodeType === Node.TEXT_NODE ? 'nodeValue' : 'innerHTML'
-    if (append) {
-      el[method] += val
+    if (fpath.indexOf('@') >= 0) {
+      const attr = fpath.split('@')[1]
+      // note: this has nothing to do with the state changing way of
+      // setting attributes.
+      if (append) {
+        el.setAttribute(attr, el.getAttribute() + val)
+      } else {
+        el.setAttribute(attr, val)
+      }
     } else {
-      el[method] = val
+      if (append) {
+        el[method] += val
+      } else {
+        el[method] = val
+      }
     }
     this.change.add(fpath)
     return this
@@ -424,6 +435,8 @@ export default class DomPointer extends DomPointerBase {
         this.placeNodes(this.dom, this.template)
         this.rendered = true
       }
+      // TODO: only highest path is interesting
+      // otherwise the replace is too many times
       for (const path of this.change) {
         if (!this.refs.has(path)) {
           // Change scheduled but reference is gone

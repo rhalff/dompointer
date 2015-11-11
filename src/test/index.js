@@ -245,6 +245,17 @@ describe('DomPointer', () => {
       expect(dp.refs.get(':0:0:0').innerHTML).eql('Test')
     })
 
+    it('set alias with attribute', () => {
+      dp.alias('headingTitle', ':0:0:0@title')
+      expect(dp.refs.get('headingTitle')).eql(dp.refs.get(':0:0:0'))
+    })
+
+    it('set data with alias pointing to attribute', () => {
+      dp.data('headingTitle', 'Test')
+      expect(dp.refs.get(':0:0:0').getAttribute('title')).eql('Test')
+      expect(dp.refs.get('headingTitle').getAttribute('title')).eql('Test')
+    })
+
     describe('dealias()', () => {
       it('return path for alias', () => {
         expect(dp.dealias('idea')).eql(':0:0')

@@ -211,6 +211,12 @@ export default class DomPointerBase {
       return this.refs.get(path)
     }
 
+    // support @attr
+    const arr = path.split('@')
+    if (arr[1] && this.refs.has(arr[0])) {
+      return this.refs.get(arr[0])
+    }
+
     throw Error('Unknown path: ' + path)
   }
 
