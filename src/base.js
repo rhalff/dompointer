@@ -201,23 +201,55 @@ export default class DomPointerBase {
 
   /**
    *
+   * Resolves a path
+   *
+   * e.g.
+   * listItem is :0:4
+   * listItem[0] becomes :0:4
+   * listItem[1] becomes :0:5
+   * listItem[2] becomes :0:6
+   *
+   * @param {String} path Path to be resolved
+   * @returns {String} The resolved path
+   */
+  resolve(path) {
+    if (path.indexOf('[') >= 0) {
+      const match = path.match(/(\w+)\[(\d+)\]/)
+      if (match.length === 3) {
+        const ret = this.dealias(match[1]).split(':')
+        ret.pop()
+        ret.push(match[2])
+        return ret.join(':')
+      }
+    }
+    return path
+  }
+
+  /**
+   *
    * Get reference by path.
    *
    * @param {String} path path
    * @returns {HTMLElement} HTML Element
    */
   getRef(path) {
-    if (this.refs.has(path)) {
-      return this.refs.get(path)
+    let _path = path
+    if (this.refs.has(_path)) {
+      return this.refs.get(_path)
+    }
+
+    _path = this.resolve(path)
+    if (this.refs.has(_path)) {
+      return this.refs.get(_path)
     }
 
     // support @attr
-    const arr = path.split('@')
+    const arr = _path.split('@')
     if (arr[1] && this.refs.has(arr[0])) {
       return this.refs.get(arr[0])
     }
 
-    throw Error('Unknown path: ' + path)
+    throw Error('Unknown path: ' + _path)
   }
 
   /**
