@@ -168,6 +168,8 @@ export default class DomPointerBase {
     if (path[0] === ':') {
       this.getRef(fpath + path) // ensure it exists
       return fpath + path
+    } else if (path[0] === '@') {
+      return fpath + path
     }
     if (this.aliases.has(path)) {
       return this.aliases.get(path)

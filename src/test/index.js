@@ -263,6 +263,15 @@ describe('DomPointer', () => {
       it('return path for path', () => {
         expect(dp.dealias(':0:0')).eql(':0:0')
       })
+      it('dealias relative attribute using numeric', () => {
+        expect(dp.dealias('@title', ':0:0')).eql(':0:0@title')
+      })
+      it('dealias relative attribute using named', () => {
+        expect(dp.dealias('@title', 'idea')).eql(':0:0@title')
+      })
+      it('dealias relative attribute deep', () => {
+        expect(dp.dealias(':0@title', ':0')).eql(':0:0@title')
+      })
       it('throw if path does not exist', () => {
         expect(() => dp.dealias(':1:0:1')).to.throw(/Unknown path/)
       })
