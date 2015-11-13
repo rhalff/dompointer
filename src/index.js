@@ -187,6 +187,17 @@ export default class DomPointer extends DomPointerBase {
       } else {
         el.setAttribute(attr, val)
       }
+      if (this.aliasAttrs.indexOf(attr) >= 0) {
+        if (this.aliases.has(val)) {
+          if (this.aliases.get(val) !== fpath) {
+            throw Error(
+              `Refusing to overwrite alias ${val} with path ${fpath} to ${this.aliases.get(val)}`
+            )
+          }
+        } else {
+          this.alias(val, fpath)
+        }
+      }
     } else {
       if (append) {
         el[method] += val

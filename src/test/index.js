@@ -250,6 +250,15 @@ describe('DomPointer', () => {
       expect(dp.refs.get('headingTitle')).eql(dp.refs.get(':0:0:0'))
     })
 
+    it('set data using alias & attribute', () => {
+      dp.data('heading@id', 'new-id')
+      expect(dp.refs.get('heading').getAttribute('id')).eql('new-id')
+    })
+
+    it('autoaliase new id', () => {
+      expect(dp.refs.has('new-id')).eql(true)
+    })
+
     it('set data with alias pointing to attribute', () => {
       dp.data('headingTitle', 'Test')
       expect(dp.refs.get(':0:0:0').getAttribute('title')).eql('Test')

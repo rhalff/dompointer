@@ -170,6 +170,9 @@ export default class DomPointerBase {
       return fpath + path
     } else if (path[0] === '@') {
       return fpath + path
+    } else if (path.indexOf('@') >= 0) {
+      const tmp = path.split('@')
+      return `${this.dealias(tmp[0])}@${tmp[1]}`
     }
     if (this.aliases.has(path)) {
       return this.aliases.get(path)
