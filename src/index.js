@@ -175,11 +175,20 @@ export default class DomPointer extends DomPointerBase {
    * @returns {DomPointer} Dom Pointer instance
    */
   data(path, val, cpath, append) {
-    const fpath = cpath ? this.dealias(path, cpath) : this.dealias(path)
+    let attr
+
+    let fpath = cpath ? this.dealias(path, cpath) : this.dealias(path)
+    if (fpath.indexOf('@') >= 0) {
+      // TODO: remove logic from dealias
+      const parts = fpath.split('@')
+      attr = parts[1]
+      fpath = parts[0]
+    }
+
     const el = this.getRef(fpath)
     const method = el.nodeType === Node.TEXT_NODE ? 'nodeValue' : 'innerHTML'
-    if (fpath.indexOf('@') >= 0) {
-      const attr = fpath.split('@')[1]
+
+    if (attr) {
       // note: this has nothing to do with the state changing way of
       // setting attributes.
       if (append) {
@@ -187,16 +196,11 @@ export default class DomPointer extends DomPointerBase {
       } else {
         el.setAttribute(attr, val)
       }
+
       if (this.aliasAttrs.indexOf(attr) >= 0) {
-        if (this.aliases.has(val)) {
-          if (this.aliases.get(val) !== fpath) {
-            throw Error(
-              `Refusing to overwrite alias ${val} with path ${fpath} to ${this.aliases.get(val)}`
-            )
-          }
-        } else {
-          this.alias(val, fpath)
-        }
+        this.refs.set(fpath, el)
+        this.dom.refs.set(fpath, el)
+        this.alias(val, fpath)
       }
     } else {
       if (append) {

@@ -248,11 +248,13 @@ describe('DomPointer', () => {
     it('set alias with attribute', () => {
       dp.alias('headingTitle', ':0:0:0@title')
       expect(dp.refs.get('headingTitle')).eql(dp.refs.get(':0:0:0'))
+      expect(dp.change.has(':0:0:0')).to.eql(true)
     })
 
     it('set data using alias & attribute', () => {
-      dp.data('heading@id', 'new-id')
-      expect(dp.refs.get('heading').getAttribute('id')).eql('new-id')
+      dp.data('subtitle@id', 'new-id')
+      expect(dp.refs.get('subtitle').getAttribute('id')).eql('new-id')
+      expect(dp.change.has(':0:0:1')).to.eql(true)
     })
 
     it('autoaliase new id', () => {
@@ -263,6 +265,7 @@ describe('DomPointer', () => {
       dp.data('headingTitle', 'Test')
       expect(dp.refs.get(':0:0:0').getAttribute('title')).eql('Test')
       expect(dp.refs.get('headingTitle').getAttribute('title')).eql('Test')
+      expect(dp.change.has(':0:0:0')).to.eql(true)
     })
 
     describe('dealias()', () => {
