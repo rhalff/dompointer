@@ -5,3 +5,5 @@ lib/
 *.swp
 node_modules/
 *.txt
+esdoc/
+docs/

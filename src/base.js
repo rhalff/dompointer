@@ -87,7 +87,6 @@ export default class DomPointerBase {
    * Also converts any comments to text nodes to make them addressable entities
    *
    * @param {HTMLElement} el The Element
-   * @param {Array} _p private path
    * @returns {DomPointer} This instance
    */
   parse(el) {
