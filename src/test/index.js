@@ -1,4 +1,9 @@
-import {} from 'babel/register'
+// shims for phantomjs
+import 'core-js/fn/map';
+import 'core-js/fn/set';
+import 'core-js/fn/symbol';
+import 'core-js/fn/array/from';
+
 import { expect, assert } from 'chai'
 import DomPointer from '../index'
 import { createElement, click, copy, compareHTML } from './util'
