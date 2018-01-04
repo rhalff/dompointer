@@ -1,8 +1,8 @@
 // shims for phantomjs
-import 'core-js/fn/map';
-import 'core-js/fn/set';
-import 'core-js/fn/symbol';
-import 'core-js/fn/array/from';
+import 'core-js/fn/map'
+import 'core-js/fn/set'
+import 'core-js/fn/symbol'
+import 'core-js/fn/array/from'
 
 import { expect, assert } from 'chai'
 import DomPointer from '../index'
@@ -140,7 +140,7 @@ describe('DomPointer', () => {
     it('remove field from attribute', () => {
       const dp = DomPointer.fromHTML(html)
       dp.setAttributes([
-        { path: ':0:0:1', op: 'remove', name: 'class', val: 'sub' },
+        { path: ':0:0:1', op: 'remove', name: 'class', val: 'sub' }
       ])
 
       expect(dp.refs.get(':0:0:1').hasAttribute('class')).eql(true)
@@ -151,7 +151,7 @@ describe('DomPointer', () => {
 
       expect(() => {
         dp.setAttributes([
-          { path: ':0:0:1', op: 'remove', name: 'class', val: 'not-exist' },
+          { path: ':0:0:1', op: 'remove', name: 'class', val: 'not-exist' }
         ])
       }).to.throw(/not found/)
     })
@@ -309,7 +309,7 @@ describe('DomPointer', () => {
     })
 
     it('can only install one handler', () => {
-      expect( () => dp.on('click') ).to.throw(Error)
+      expect(() => dp.on('click')).to.throw(Error)
     })
 
     it('off()', () => {
@@ -319,7 +319,7 @@ describe('DomPointer', () => {
     })
 
     it('can turn off all', () => {
-      const bogus = function bogus() {}
+      const bogus = function bogus () {}
       dp.on('click', bogus)
       dp.on('mouseover', bogus)
       dp.off()

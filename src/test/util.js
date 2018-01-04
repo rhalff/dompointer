@@ -1,12 +1,12 @@
 import { clean } from 'dom-clean'
-export function createElement(html) {
+export function createElement (html) {
   const div = document.createElement('div')
   div.innerHTML = html
   clean(div)
   return div
 }
 
-export function printFrag(df) {
+export function printFrag (df) {
   const inner = document.createElement('div')
   for (const node of df.childNodes) {
     inner.appendChild(node.cloneNode(true))
@@ -14,7 +14,7 @@ export function printFrag(df) {
   console.log(inner.innerHTML)
 }
 
-export function compareHTML(...nodes) {
+export function compareHTML (...nodes) {
   return nodes.map((el) => {
     const inner = document.createElement('div')
     for (const node of el.childNodes) {
@@ -26,9 +26,9 @@ export function compareHTML(...nodes) {
   })
 }
 
-export function click(el) {
+export function click (el) {
   const ev = document.createEvent('MouseEvents')
-  ev.initMouseEvent( /* deprecated but works */
+  ev.initMouseEvent(/* deprecated but works */
     'click',
     true, true,
     document.defaultView,
@@ -40,6 +40,6 @@ export function click(el) {
   el.dispatchEvent(ev)
 }
 
-export function copy(obj) {
+export function copy (obj) {
   return JSON.parse(JSON.stringify(obj))
 }

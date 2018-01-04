@@ -21,4 +21,3 @@ export default `
         </section>
     </div>
 </div>`
-

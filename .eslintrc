@@ -1,20 +1,7 @@
 {
-  "extends": "airbnb",
+  "extends": "standard",
   "env": {
-    "es6": true,
     "browser": true,
-    "mocha": true,
-    "node": true
-  },
-  "rules": {
-    "valid-jsdoc": 2,
-    "semi": [2, "never"],
-    "comma-dangle": 0,
-    "indent": [2, 2],
-    "no-console": 0
-  },
-  "plugins": [
-    "react"
-  ]
+    "mocha": true
+  }
 }
-

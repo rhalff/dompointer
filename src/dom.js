@@ -1,7 +1,7 @@
 import DomPointerBase from './base'
 
 export default class DomPointerDom extends DomPointerBase {
-  constructor() {
+  constructor () {
     super()
     /**
      *

@@ -4,7 +4,7 @@ import DomPointerDom from './dom'
 import DomPointerTemplate from './template'
 
 export default class DomPointer extends DomPointerBase {
-  constructor() {
+  constructor () {
     super()
 
     /**
@@ -55,7 +55,7 @@ export default class DomPointer extends DomPointerBase {
    * @param {Object} opts Options object
    * @return {DomPointer} Dom Pointer instance
    */
-  static create(el, opts) {
+  static create (el, opts) {
     const dp = new DomPointer()
     dp.setOpts(opts)
     clean(el, dp._opts.comments)
@@ -76,7 +76,7 @@ export default class DomPointer extends DomPointerBase {
    * @param {HTMLElement} el Target element for rendering
    * @returns {DomPointer} This instance
    */
-  setElement(el) {
+  setElement (el) {
     if (el && el.nodeType === Node.ELEMENT_NODE) {
       if (this.dom.node) {
         this._clearOn()
@@ -96,7 +96,7 @@ export default class DomPointer extends DomPointerBase {
    * @param {HTMLElement} el A HTML Element
    * @return {String} Path to this element relative to the base element.
    */
-  path(el) {
+  path (el) {
     let node = el
     const path = []
     while (node.parentNode) {
@@ -116,7 +116,7 @@ export default class DomPointer extends DomPointerBase {
    * @param {HTMLElement[]} els List of elements to include in the map
    * @returns {Object} Map with selected paths
    */
-  paths(els) {
+  paths (els) {
     const paths = {}
     for (const item of els) {
       paths[this.path(item)] = item
@@ -134,7 +134,7 @@ export default class DomPointer extends DomPointerBase {
    * @param {Object} opts Options object
    * @return {DomPointer} Dom Pointer instance
    */
-  static fromHTML(html, opts) {
+  static fromHTML (html, opts) {
     const dp = new DomPointer()
     dp.setOpts(opts)
     dp._setHTML(html)
@@ -149,7 +149,7 @@ export default class DomPointer extends DomPointerBase {
    * @param {String} html HTML String
    * @returns {DomPointer} Dom Pointer instance
    */
-  _setHTML(html) {
+  _setHTML (html) {
     const temp = document.createElement('div')
     temp.innerHTML = html
     clean(temp, this._opts.comments)
@@ -174,7 +174,7 @@ export default class DomPointer extends DomPointerBase {
    * @param {Boolean} append Whether to append to the contents
    * @returns {DomPointer} Dom Pointer instance
    */
-  data(path, val, cpath, append) {
+  data (path, val, cpath, append) {
     let attr
 
     let fpath = cpath ? this.dealias(path, cpath) : this.dealias(path)
@@ -232,7 +232,7 @@ export default class DomPointer extends DomPointerBase {
    * @returns {Void} Void
    * @private
    */
-  _addAttribute(el, change) {
+  _addAttribute (el, change) {
     const curr = el.getAttribute(change.name)
     if (curr) {
       el.setAttribute(change.name, [curr, change.val].join(' '))
@@ -258,7 +258,7 @@ export default class DomPointer extends DomPointerBase {
    * @returns {Void} Void
    * @private
    */
-  _removeAttribute(el, change) {
+  _removeAttribute (el, change) {
     if (!change.hasOwnProperty('val')) {
       // TODO: generalize and require all props
       throw Error('must specify val to remove')
@@ -289,18 +289,18 @@ export default class DomPointer extends DomPointerBase {
    * @param {Object[]} map Attribute map
    * @returns {DomPointer} This instance
    */
-  setAttributes(map = []) {
+  setAttributes (map = []) {
     for (const change of map) {
       const el = this.refs.get(change.path)
       switch (change.op) {
-      case 'remove':
-        this._removeAttribute(el, change)
-        break
-      case 'add':
-      case 'change':
-      default:
-        this._addAttribute(el, change)
-        break
+        case 'remove':
+          this._removeAttribute(el, change)
+          break
+        case 'add':
+        case 'change':
+        default:
+          this._addAttribute(el, change)
+          break
       }
       this.change.add(this.dealias(change.path))
     }
@@ -314,7 +314,7 @@ export default class DomPointer extends DomPointerBase {
    * @param {Object[]} map Attribute map
    * @returns {DomPointer} This instance
    */
-  revertAttributes(map = []) {
+  revertAttributes (map = []) {
     this.setAttributes(map.map(change => {
       return {
         path: change.path,
@@ -334,7 +334,7 @@ export default class DomPointer extends DomPointerBase {
    * @param {Function} handler Callback
    * @returns {DomPointer} Dom Pointer instance
    */
-  on(type, handler) {
+  on (type, handler) {
     if (this.dom.node) {
       if (this._handlers[type]) {
         throw Error(`Handler already defined for ${type}`)
@@ -353,13 +353,13 @@ export default class DomPointer extends DomPointerBase {
    * @param {String} type Event type, e.g. click, mousemove etc.
    * @returns {DomPointer} Dom Pointer instance
    */
-  off(type) {
+  off (type) {
     if (this.dom.node) {
       if (!arguments.length) {
         Object.keys(this._handlers).forEach(kind => this.off(kind))
       } else {
         if (!this._handlers[type]) {
-          throw Error('No event handler installed for ${type}')
+          throw Error(`No event handler installed for ${type}`)
         }
         this.dom.node.removeEventListener(type, this._handlers[type])
         delete this._handlers[type]
@@ -378,7 +378,7 @@ export default class DomPointer extends DomPointerBase {
    * @private
    * @returns {undefined} Undefined
    */
-  _clearOn() {
+  _clearOn () {
     Object.keys(this._handlers).forEach(type => {
       this.dom.node.removeEventListener(type, this._handlers[type])
     })
@@ -394,7 +394,7 @@ export default class DomPointer extends DomPointerBase {
    * @private
    * @returns {undefined} Undefined
    */
-  _applyOn(el) {
+  _applyOn (el) {
     Object.keys(this._handlers).forEach(type => {
       el.addEventListener(type, this._handlers[type])
     })
@@ -405,7 +405,7 @@ export default class DomPointer extends DomPointerBase {
    * @param {Boolean} remove Whether to remove the current rendering from the dom
    * @returns {DomPointer} Dom Pointer instance
    */
-  reset(remove) {
+  reset (remove) {
     if (remove && this.dom.node) {
       this.dom.node.innerHTML = ''
       this.dom.refs.clear()
@@ -426,7 +426,7 @@ export default class DomPointer extends DomPointerBase {
    * @param {DomPointerBase} source source to clone
    * @returns {DomPointer} Dom Pointer instance
    */
-  placeNodes(target, source) {
+  placeNodes (target, source) {
     target.node.innerHTML = ''
     for (const node of source.node.childNodes) {
       target.node.appendChild(node.cloneNode(true))
@@ -441,7 +441,7 @@ export default class DomPointer extends DomPointerBase {
    *
    * @return {HTMLElement} The container
    */
-  render() {
+  render () {
     if (this.dom.node) {
       if (!this.node) {
         throw Error('Empty node')

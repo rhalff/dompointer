@@ -1,7 +1,7 @@
-const validAlias = /^[A-Za-z]+[\w\-]*$/
+const validAlias = /^[A-Za-z]+[\w-]*$/
 
 export default class DomPointerBase {
-  constructor() {
+  constructor () {
     /**
      *
      * Reference map
@@ -48,7 +48,7 @@ export default class DomPointerBase {
     this.node = document.createDocumentFragment()
   }
 
-  _parse(el, _p = []) {
+  _parse (el, _p = []) {
     for (let idx = 0; idx < el.childNodes.length; idx++) {
       let node = el.childNodes[idx]
       const arr = _p.slice()
@@ -89,7 +89,7 @@ export default class DomPointerBase {
    * @param {HTMLElement} el The Element
    * @returns {DomPointer} This instance
    */
-  parse(el) {
+  parse (el) {
     this.refs.clear()
     this._parse(el || this.node)
 
@@ -112,14 +112,14 @@ export default class DomPointerBase {
    * @param {Boolean} opts.comments Whether to keep comments
    * @returns {DomPointer} This instance
    */
-  setOpts(opts = {}) {
+  setOpts (opts = {}) {
     for (const key of Object.keys(opts)) {
       this._opts[key] = opts[key]
     }
     return this
   }
 
-  _alias(alias, path) {
+  _alias (alias, path) {
     if (validAlias.test(alias)) {
       this.refs.set(alias, this.getRef(path))
       this.aliases.set(alias, path)
@@ -137,7 +137,7 @@ export default class DomPointerBase {
    * @param {String} path Path to be aliased
    * @returns {DomPointer} This instance
    */
-  alias(alias, path) {
+  alias (alias, path) {
     this._alias(alias, path)
     // TODO: do this smarter
     // _aliases could be a
@@ -162,7 +162,7 @@ export default class DomPointerBase {
    * @returns {String} Dealiased path
    * @private
    */
-  dealias(path, cpath) {
+  dealias (path, cpath) {
     const fpath = cpath ? this.dealias(cpath) : ''
     if (path[0] === ':') {
       this.getRef(fpath + path) // ensure it exists
@@ -185,7 +185,7 @@ export default class DomPointerBase {
    * @returns {TextElement} TextNode
    * @private
    */
-  _convertCommentToTextNode(el) {
+  _convertCommentToTextNode (el) {
     const nc = document.createTextNode('')
     el.parentNode.replaceChild(nc, el)
     return nc
@@ -197,7 +197,7 @@ export default class DomPointerBase {
    * @param {HTMLElement|DocumentFragment} node And HTMLElement or DocumentFragment
    * @returns {DomPointer} This instance
    */
-  setNode(node) {
+  setNode (node) {
     this.node = node
     this.parse()
     return this
@@ -216,7 +216,7 @@ export default class DomPointerBase {
    * @param {String} path Path to be resolved
    * @returns {String} The resolved path
    */
-  resolve(path) {
+  resolve (path) {
     if (path.indexOf('[') >= 0) {
       const match = path.match(/(\w+)\[(\d+)\]/)
       if (match.length === 3) {
@@ -236,7 +236,7 @@ export default class DomPointerBase {
    * @param {String} path path
    * @returns {HTMLElement} HTML Element
    */
-  getRef(path) {
+  getRef (path) {
     let _path = path
     if (this.refs.has(_path)) {
       return this.refs.get(_path)
@@ -268,7 +268,7 @@ export default class DomPointerBase {
    * @param {HTMLElement} el HTML Element
    * @returns {HTMLElement} HTML Element
    */
-  updateRef(path, el) {
+  updateRef (path, el) {
     this.getRef(path)
     this.refs.set(path, el)
   }
